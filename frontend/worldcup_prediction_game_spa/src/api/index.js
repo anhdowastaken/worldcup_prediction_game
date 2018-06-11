@@ -187,3 +187,7 @@ const API_URL = 'http://127.0.0.1:5000/api'
 export function fetchMatches() {
     return axios.get(`${API_URL}/get/matches`)
 }
+
+export function fetchPredictions(user_id) {
+    return axios.get(`${API_URL}/get/predictions/user_id/${user_id}`)
+}

@@ -1,5 +1,5 @@
 """
-api.py  
+api.py
 - Provide the API endpoints for consuming and producing
   REST requests and responses
 """
@@ -7,11 +7,12 @@ api.py
 import json
 import requests
 from flask import Blueprint, jsonify, request, Response
+from .models import db, User, Prediction
 
 api = Blueprint('api', __name__)
 
 @api.route('/get/matches/')
-def get_matches():  
+def get_matches():
     r = requests.get(url='https://raw.githubusercontent.com/openfootball/world-cup.json/master/2018/worldcup.json')
 
     matches = []
@@ -30,3 +31,7 @@ def get_matches():
 
     return response
 
+@api.route('/get/predictions/user_id/<int:user_id>')
+def get_predictions(user_id):
+    predictions = Prediction.query.filter(Prediction.user_id == user_id).all()
+    return jsonify([p.to_dict() for p in predictions])

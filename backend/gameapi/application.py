@@ -15,4 +15,7 @@ def create_app(app_name='GAME_API'):
     from gameapi.api import api
     app.register_blueprint(api, url_prefix='/api')
 
+    from gameapi.models import db
+    db.init_app(app)
+
     return app
