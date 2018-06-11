@@ -1,4 +1,4 @@
-#!/Users/alex/Desktop/worldcup_prediction_game/backend/venv/bin/python3
+#!/home/anhdo/Desktop/worldcup_prediction_game/backend/venv/bin/python3
 # EASY-INSTALL-ENTRY-SCRIPT: 'alembic==0.9.9','console_scripts','alembic'
 __requires__ = 'alembic==0.9.9'
 import re

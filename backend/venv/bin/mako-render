@@ -1,4 +1,4 @@
-#!/Users/alex/Desktop/worldcup_prediction_game/backend/venv/bin/python3
+#!/home/anhdo/Desktop/worldcup_prediction_game/backend/venv/bin/python3
 # EASY-INSTALL-ENTRY-SCRIPT: 'Mako==1.0.7','console_scripts','mako-render'
 __requires__ = 'Mako==1.0.7'
 import re
