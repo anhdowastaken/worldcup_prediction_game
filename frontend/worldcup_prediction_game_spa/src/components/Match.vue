@@ -1,0 +1,36 @@
+<template>
+    <div class="match">
+        <match-detail v-bind:num="match.num"
+                      v-bind:team1="match.team1"
+                      v-bind:team2="match.team2"
+                      v-bind:score1="match.score1"
+                      v-bind:score2="match.score2"></match-detail>
+        <match-prediction v-bind:num="match.num"
+                          v-bind:team1="match.team1"
+                          v-bind:team2="match.team2"></match-prediction>
+    </div>
+</template>
+
+<script>
+import MatchDetail from '@/components/MatchDetail'
+import MatchPrediction from '@/components/MatchPrediction'
+
+export default {
+    name: 'Match',
+    components: {
+        MatchDetail,
+        MatchPrediction
+    },
+    props: {
+        match: Object
+    },
+    data() {
+        return {
+
+        }
+    }
+}
+</script>
+
+<style scoped>
+</style>

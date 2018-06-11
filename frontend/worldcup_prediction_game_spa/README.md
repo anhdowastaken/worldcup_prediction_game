@@ -1,6 +1,6 @@
 # worldcup_prediction_game_spa
 
-> A Vue.js project
+> World Cup prediction game using Flask and VueJS
 
 ## Build Setup
 
