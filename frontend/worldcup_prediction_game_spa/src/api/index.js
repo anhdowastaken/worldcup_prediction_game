@@ -1,4 +1,4 @@
-const matches = [{
+const sample_matches = [{
     num: 2,
     date: "2014-06-13",
     time: "13:00",

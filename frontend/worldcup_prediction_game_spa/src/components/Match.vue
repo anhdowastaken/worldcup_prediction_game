@@ -1,6 +1,12 @@
 <template>
     <div class="match">
         <match-detail v-bind:num="match.num"
+                      v-bind:city="match.city"
+                      v-bind:stadium="match.stadium"
+                      v-bind:date="match.date"
+                      v-bind:time="match.time"
+                      v-bind:timezone="match.timezone"
+                      v-bind:group="match.group"
                       v-bind:team1="match.team1"
                       v-bind:team2="match.team2"
                       v-bind:score1="match.score1"
