@@ -2,7 +2,7 @@
     <div class="match">
         <match-detail v-bind:num="match.num"
                       v-bind:city="match.city"
-                      v-bind:stadium="match.stadium"
+                      v-bind:stadium="match.stadium.name"
                       v-bind:date="match.date"
                       v-bind:time="match.time"
                       v-bind:timezone="match.timezone"

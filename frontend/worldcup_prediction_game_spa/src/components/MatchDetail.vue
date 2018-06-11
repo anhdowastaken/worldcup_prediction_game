@@ -4,7 +4,7 @@
             <h1>[{{ group }}] <span class="team-name">{{ team1.name }}</span> vs <span class="team-name">{{ team2.name }}</span></h1>
         </div>
         <div class="match-information">
-            <div class="stadium">{{ stadium.name }}</div>
+            <div class="stadium">{{ stadium }}</div>
             <div class="location">{{ city }}</div>
             <div class="time"><span>{{ date }} {{ time }} {{ timezone }}</span></div>
         </div>
@@ -21,8 +21,14 @@ export default {
     name: 'MatchDetail',
     props: {
         num: Number,
-        city: String,
-        stadium: Object,
+        city: {
+            type: String,
+            default: "Unknown city"
+        },
+        stadium: {
+            type: String,
+            default: "Unknown stadium"
+        },
         date: String,
         time: String,
         timezone: String,
