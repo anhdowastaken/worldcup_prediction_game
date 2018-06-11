@@ -184,10 +184,14 @@ import axios from 'axios'
 
 const API_URL = 'http://127.0.0.1:5000/api'
 
-export function fetchMatches() {
-    return axios.get(`${API_URL}/get/matches`)
+export function fetchMatchesWithPredictions(user_id) {
+    return axios.get(`${API_URL}/get_matches_with_prediction/user_id/${user_id}`)
 }
 
-export function fetchPredictions(user_id) {
-    return axios.get(`${API_URL}/get/predictions/user_id/${user_id}`)
+export function submitPrediction(user_id, match_id, prediction) {
+    return axios.post(`${API_URL}/submit_prediction`,
+                      { user_id: user_id,
+                        match_id: match_id,
+                        prediction: prediction
+                      })
 }

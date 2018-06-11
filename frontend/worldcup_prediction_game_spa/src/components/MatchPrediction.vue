@@ -1,8 +1,8 @@
 <template>
     <div class="match-prediction">
-        <a href="#" v-on:click.prevent="submitPrediction(1)">{{ team1.name }} win</a>
-        <a href="#" v-on:click.prevent="submitPrediction(0)">Draw</a>
-        <a href="#" v-on:click.prevent="submitPrediction(2)">{{ team2.name }} win</a>
+        <a href="#" v-on:click.prevent="submit(1)">{{ team1.name }} win</a>
+        <a href="#" v-on:click.prevent="submit(0)">Draw</a>
+        <a href="#" v-on:click.prevent="submit(2)">{{ team2.name }} win</a>
         <p v-if="prediction != null">
             <span v-if="prediction == 0">You predicted draw</span>
             <span v-else-if="prediction == 1">You predicted {{ team1.name }} win</span>
@@ -12,6 +12,8 @@
 </template>
 
 <script>
+import { submitPrediction } from '@/api'
+
 export default {
     name: 'MatchPrediction',
     props: {
@@ -29,8 +31,10 @@ export default {
         }
     },
     methods: {
-        submitPrediction: function(prediction) {
-            alert(prediction)
+        submit: function(prediction) {
+            submitPrediction(1, this.num, prediction).then((response) => {
+                this.prediction = prediction
+            })
         }
     }
 }
