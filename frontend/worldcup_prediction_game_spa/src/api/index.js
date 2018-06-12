@@ -195,3 +195,14 @@ export function submitPrediction(user_id, match_id, prediction) {
                         prediction: prediction
                       })
 }
+
+export function submitLogin(username, password) {
+    return axios.post(`${API_URL}/login`,
+                      { username: username,
+                        password: password
+                      })
+}
+
+export function submitLogout() {
+    return axios.post(`${API_URL}/logout`)
+}
