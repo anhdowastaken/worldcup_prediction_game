@@ -8,16 +8,19 @@ import json
 import requests
 from flask import Blueprint, jsonify, request, Response, redirect
 from flask_login import current_user, login_user, logout_user, login_required
+from .application import bcrypt
 from .models import db, User, Prediction
 
+WC_URL = 'https://raw.githubusercontent.com/openfootball/world-cup.json/master/2018/worldcup.json'
 api = Blueprint('api', __name__)
 
 @api.route('/register', methods=['POST'])
 def register():
     data = request.get_json()
-    user = User(data['username'], data['password'])
+    user = User(data['username'], bcrypt.generate_password_hash(data['password']))
     db.session.add(user)
     db.session.commit()
+
     return jsonify(dict(message='Register successfully')), 201
  
 @api.route('/login', methods=['POST'])
@@ -25,8 +28,10 @@ def login():
     data = request.get_json()
     username = data['username']
     password = data['password']
-    registered_user = User.query.filter_by(username=username, password=password).first()
-    if registered_user is None:
+
+    pw_hash = bcrypt.generate_password_hash(password).decode('utf-8')
+    registered_user = User.query.filter_by(username=username).first()
+    if bcrypt.check_password_hash(pw_hash, password) == False:
         return jsonify(dict(message='Username or password is invalid')), 401
 
     login_user(registered_user)
@@ -42,7 +47,7 @@ def logout():
 
 @api.route('/get_matches/', methods=['GET'])
 def get_matches():
-    r = requests.get(url='https://raw.githubusercontent.com/openfootball/world-cup.json/master/2018/worldcup.json')
+    r = requests.get(url=WC_URL)
 
     matches = []
     rounds = r.json()['rounds']
@@ -66,7 +71,7 @@ def get_matches_with_predictions(user_id):
     if user_id != current_user.id:
         return jsonify(dict(message='Authentication required')), 400
 
-    r = requests.get(url='https://raw.githubusercontent.com/openfootball/world-cup.json/master/2018/worldcup.json')
+    r = requests.get(url=WC_URL)
 
     matches = []
     rounds = r.json()['rounds']

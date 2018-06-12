@@ -13,3 +13,10 @@ python3 appserver.py
 cd ./frontend/worldcup_prediction_game_spa
 npm install
 npm run dev
+
+# db
+python3 manage.py db init
+python3 manage.py db migrate
+python3 manage.py db upgrade
+
+python3 manage.py shell

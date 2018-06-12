@@ -32,6 +32,7 @@ export default {
     },
     methods: {
         submit: function(prediction) {
+            // FIXME: Hard code user_id
             submitPrediction(1, this.num, prediction).then((response) => {
                 this.latestPrediction = prediction
             })

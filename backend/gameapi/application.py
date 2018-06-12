@@ -6,18 +6,27 @@ application.py
 from flask import Flask
 from flask_cors import CORS
 from flask_login import LoginManager
-from .models import User
+from flask_bcrypt import Bcrypt
 
 login_manager = LoginManager()
-# login_manager.login_view = 'api.login'
+
+@login_manager.user_loader
+def load_user(user_id):
+    from .models import User
+    return User.query.filter_by(id = user_id).first()
+
+bcrypt = Bcrypt()
 
 def create_app(app_name='GAME_API'):
     app = Flask(app_name)
     app.config.from_object('gameapi.config.BaseConfig')
-    app.config['TESTING'] = False
-    app.config['LOGIN_DISABLED'] = False
+    login_manager.init_app(app)
+    bcrypt.init_app(app)
 
-    cors = CORS(app, resource={r"/api/*": {"origin": "*"}})
+    # Allows users to make authenticated requests.
+    # This allows cookies and credentials to be submitted across domains.
+    # https://flask-cors.corydolphin.com/en/latest/api.html
+    CORS(app, resource={r"/api/*": {"origin": "*"}}, supports_credentials=True)
 
     from gameapi.api import api
     app.register_blueprint(api, url_prefix='/api')
@@ -25,12 +34,4 @@ def create_app(app_name='GAME_API'):
     from gameapi.models import db
     db.init_app(app)
 
-    login_manager.init_app(app)
-
     return app
-
-@login_manager.user_loader
-def load_user(user_id):
-    print(user_id)
-    user = User.query.filter(User.id == user_id).first()
-    return user

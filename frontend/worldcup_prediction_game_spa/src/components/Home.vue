@@ -22,6 +22,7 @@ export default {
         }
     },
     beforeMount() {
+        // FIXME: Hard code user_id
         fetchMatchesWithPredictions(1).then(response => {
             this.matches = response.data
         })

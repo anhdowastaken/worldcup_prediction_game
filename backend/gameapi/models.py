@@ -5,39 +5,31 @@ models.py
 
 from datetime import datetime
 from flask_sqlalchemy import SQLAlchemy
+from flask_login import UserMixin
+from .application import bcrypt
 
 db = SQLAlchemy()
 
-class User(db.Model):
+class User(db.Model, UserMixin):
     __tablename__ = 'users'
 
-    id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(50), unique=True)
-    password = db.Column(db.String(50))
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    username = db.Column(db.String, unique=True)
+    password = db.Column(db.String)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    authenticated = db.Column(db.Boolean, default=False)
+    last_login_at = db.Column(db.DateTime, default=datetime.utcnow)
 
-    def is_authenticated(self):
-        # return self.authenticated
-        return True
-
-    def is_active(self):
-        return True
-
-    def is_anonymous(self):
-        return False
-
-    def get_id(self):
-        return unicode(self.id)
-
-    def to_dict(self):
-        return dict(id=self.id,
-                    username=self.username,
-                    authenticated=self.authenticated,
-                    created_at=self.created_at.strftime('%Y-%m-%d %H:%M:%S'))
+    def __init__(self, username, password):
+        self.username = username
+        self.password = bcrypt.generate_password_hash(password).decode('utf-8')
 
     def __repr__(self):
-        return '[%d][%s][%s][%s]' % (self.id, self.username, self.authenticated, self.created_at.strftime('%Y-%m-%d %H:%M:%S'))
+        return '%d\t%s\t%s\t%s' % (self.id, self.username, self.password, self.last_login_at.strftime('%Y-%m-%d %H:%M:%S'))
+
+    def to_dict(self):
+        return dict(user_id=self.id,
+                    username=self.username,
+                    last_login_at=self.last_login_at)
 
 class Prediction(db.Model):
     __tablename__ = 'predictions'
@@ -45,6 +37,14 @@ class Prediction(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), primary_key=True)
     match_id = db.Column(db.Integer, primary_key=True)
     prediction = db.Column(db.Integer)
+
+    def __init__(self, user_id, match_id, prediction):
+        self.user_id = user_id
+        self.match_id = match_id
+        self.prediction = prediction
+
+    def __repr__(self):
+        return '[%d] predicted [%d]: [%d]' % (self.user_id, self.match_id, self.prediction)
 
     def to_dict(self):
         return dict(user_id=self.user_id,
