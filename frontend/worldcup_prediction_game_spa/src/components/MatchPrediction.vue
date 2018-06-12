@@ -3,7 +3,7 @@
         <a href="#" v-on:click.prevent="submit(1)">{{ team1.name }} win</a>
         <a href="#" v-on:click.prevent="submit(0)">Draw</a>
         <a href="#" v-on:click.prevent="submit(2)">{{ team2.name }} win</a>
-        <p v-if="prediction != null">
+        <p v-if="latestPrediction != null">
             <span v-if="latestPrediction == 0">You predicted draw</span>
             <span v-else-if="latestPrediction == 1">You predicted {{ team1.name }} win</span>
             <span v-else-if="latestPrediction == 2">You predicted {{ team2.name }} win</span>
