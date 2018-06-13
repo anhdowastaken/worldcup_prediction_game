@@ -101,7 +101,7 @@ def login():
                         user_data=dict(user_id=registered_user.id,
                                        username=registered_user.username,
                                        role=registered_user.role,
-                                       last_login_at=registered_user.last_login_at))), 200
+                                       last_login_at=int(registered_user.last_login_at.timestamp())))), 200
 
 @api.route('/logout', methods=['POST'])
 def logout():
