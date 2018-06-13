@@ -1,6 +1,7 @@
 <template>
     <div class="home">
         <logout></logout>
+        <account-info></account-info>
         <match v-for="match in matches" v-bind:match="match" :key="match.num"></match>
     </div>
 </template>
@@ -8,12 +9,14 @@
 <script>
 import { mapState } from 'vuex' 
 import Logout from '@/components/Logout'
+import AccountInfo from '@/components/AccountInfo'
 import Match from '@/components/Match'
 
 export default {
     name: 'Home',
     components: {
         Logout,
+        AccountInfo,
         Match
     },
     data () {

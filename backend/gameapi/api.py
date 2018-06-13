@@ -70,7 +70,10 @@ def register(jwt_user):
 
     return jsonify(dict(message='Register successfully',
                         registered=True,
-                        user_data=dict(id=user.id, username=username, password=password, role=user.role))), 201
+                        user_data=dict(id=user.id,
+                                       username=username,
+                                       password=password,
+                                       role=user.role))), 201
 
 @api.route('/login', methods=['POST'])
 def login():
@@ -95,7 +98,10 @@ def login():
     return jsonify(dict(message='Logged in successfully',
                         authenticated=True,
                         token=token.decode('utf-8'),
-                        user_data=dict(user_id=registered_user.id, role=registered_user.role, last_login_at=registered_user.last_login_at))), 200
+                        user_data=dict(user_id=registered_user.id,
+                                       username=registered_user.username,
+                                       role=registered_user.role,
+                                       last_login_at=registered_user.last_login_at))), 200
 
 @api.route('/logout', methods=['POST'])
 def logout():
