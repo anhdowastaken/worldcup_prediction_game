@@ -214,3 +214,11 @@ export function submitLogout(jwt) {
     return axios.create({withCredentials: true})
                 .post(`${API_URL}/logout`)
 }
+
+export function submitRegister(jwt, username) {
+    return axios.create({withCredentials: true})
+                .post(`${API_URL}/register`,
+                      { username: username },
+                      { headers: { Authorization: `Bearer: ${jwt}` } }
+                    )
+}

@@ -6,6 +6,8 @@ api.py
 
 import json
 import requests
+import random
+import string
 from datetime import datetime, timedelta
 from functools import wraps
 from flask import Blueprint, jsonify, request, Response, redirect
@@ -15,7 +17,7 @@ from .application import bcrypt
 from .config import BaseConfig
 from .models import db, User, Prediction
 
-WC_URL = 'https://raw.githubusercontent.com/openfootball/world-cup.json/master/2018/worldcup.json'
+WC_URL = 'https://raw.githubusercontent.com/openfootball/world-cup.json/master/2014/worldcup.json'
 api = Blueprint('api', __name__)
 
 def token_required(f):
@@ -55,14 +57,20 @@ def token_required(f):
 @login_required
 def register(jwt_user):
     if jwt_user.id != current_user.id:
-        return jsonify(dict(message='Authentication required')), 400
+        return jsonify(dict(message='Authentication required'), registered=False), 400
 
     data = request.get_json()
-    user = User(data['username'], bcrypt.generate_password_hash(data['password']))
+    username = data['username']
+    # Generate random string containing 8 characters
+    password = ''.join(random.choice(string.ascii_uppercase + string.ascii_lowercase + string.digits) for _ in range(8))
+
+    user = User(username, password)
     db.session.add(user)
     db.session.commit()
 
-    return jsonify(dict(message='Register successfully')), 201
+    return jsonify(dict(message='Register successfully',
+                        registered=True,
+                        user_data=dict(id=user.id, username=user.username, password=password))), 201
 
 @api.route('/login', methods=['POST'])
 def login():

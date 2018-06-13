@@ -5,6 +5,7 @@ import Vuex from 'vuex'
 import { fetchMatchesWithPredictions } from '@/api'
 import { submitLogin } from '@/api'
 import { submitLogout } from '@/api'
+import { submitRegister } from '@/api'
 import { isValidJwt, EventBus } from '@/utils'
 
 Vue.use(Vuex)
@@ -45,6 +46,9 @@ const actions = {
                 context.commit('setJwtToken', { jwt: '' })
                 context.commit('setUserData', { userData: {} })
             })
+    },
+    register(context, { jwt, username }) {
+        return submitRegister(jwt, username)
     }
 }
 
