@@ -3,11 +3,11 @@
 
         <div class="match-detail">
             <div class="match-title">
-                <h1>[{{ this.match.group }}] <span class="team-name">{{ this.match.team1.name }}</span> vs <span class="team-name">{{ this.match.team2.name }}</span></h1>
+                <h2>[{{ this.match.group }}] <span class="team-name">{{ this.match.team1.name }}</span> vs <span class="team-name">{{ this.match.team2.name }}</span></h2>
             </div>
             <div class="match-information">
-                <div class="stadium">{{ this.match.stadium.name }}</div>
-                <div class="time"><span>{{ this.match.date }} {{ this.match.time }} {{ this.match.timezone }}</span></div>
+                <div class="time"><span>{{ this.match.local_match_time }}</span></div>
+                <p v-if="enoughTimeToPredict">{{ timeToPredict }} to predict</p>
             </div>
             <div class="match-result">
                 <div class="match-score" v-if="this.match.score1 != null">
@@ -33,6 +33,7 @@
 <script>
 import { mapState } from 'vuex' 
 import { submitPrediction } from '@/api'
+import { msToTime } from '@/utils'
 
 export default {
     name: 'Match',
@@ -53,7 +54,7 @@ export default {
             }
         },
         enoughTimeToPredict: function() {
-            let match_time = this.match.date + ' ' + this.match.time + ' ' + this.match.timezone
+            let match_time = this.match.date + ' ' + this.match.time + ' ' + (this.match.timezone ? this.match.timezone : '')
             let d = new Date(match_time)
             let diff = d.getTime() - Date.now()
             if (diff > 0) {
@@ -61,6 +62,12 @@ export default {
             } else {
                 return false
             }
+        },
+        timeToPredict: function() {
+            let match_time = this.match.date + ' ' + this.match.time + ' ' + (this.match.timezone ? this.match.timezone : '')
+            let d = new Date(match_time)
+            let diff = d.getTime() - Date.now()
+            return msToTime(diff)
         }
     }),
     methods: {

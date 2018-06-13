@@ -58,6 +58,16 @@ const mutations = {
     // When a mutation is committed any components that are referencing
     // the now reactive data in the state object are updated with the new values, causing the UI to update and re-render its elements.
     setMatches(state, payload) {
+        for (let i = 0; i < payload.matches.length; i++) {
+            let match = payload.matches[i]
+            if (match['knockout']) {
+                match['group'] = 'Knockout'
+            }
+
+            let match_time = match.date + ' ' + match.time + ' ' + (match.timezone ? match.timezone : '')
+            let d = new Date(match_time)
+            match['local_match_time'] = d.toLocaleString()
+        }
         state.matches = payload.matches
     },
     setUserData(state, payload) {
