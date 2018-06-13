@@ -5,6 +5,7 @@
 </template>
 
 <script>
+import { mapState } from 'vuex' 
 import { submitLogout } from '@/api'
 
 export default {
@@ -14,10 +15,12 @@ export default {
 
         }
     },
+    computed: mapState({
+        jwt: state => state.jwt
+    }),
     methods: {
         logout: function() {
-            submitLogout().then((response) => {
-                this.$emit("authenticated", false);
+            submitLogout(this.jwt).then((response) => {
                 this.$router.replace({ name: "Login" });
             })
         }

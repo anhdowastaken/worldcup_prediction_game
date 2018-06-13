@@ -6,41 +6,96 @@ api.py
 
 import json
 import requests
+from datetime import datetime, timedelta
+from functools import wraps
 from flask import Blueprint, jsonify, request, Response, redirect
 from flask_login import current_user, login_user, logout_user, login_required
+import jwt
 from .application import bcrypt
+from .config import BaseConfig
 from .models import db, User, Prediction
 
 WC_URL = 'https://raw.githubusercontent.com/openfootball/world-cup.json/master/2018/worldcup.json'
 api = Blueprint('api', __name__)
 
+def token_required(f):
+    @wraps(f)
+    def _verify(*args, **kwargs):
+        auth_headers = request.headers.get('Authorization', '').split()
+
+        invalid_msg = {
+            'message': 'Invalid token. Authentication required',
+            'authenticated': False
+        }
+        expired_msg = {
+            'message': 'Expired token. Re-authentication required.',
+            'authenticated': False
+        }
+
+        if len(auth_headers) != 2:
+            return jsonify(invalid_msg), 401
+
+        try:
+            token = auth_headers[1]
+            data = jwt.decode(token, BaseConfig().SECRET_KEY)
+            user = User.query.filter_by(id=data['sub']).first()
+            if not user:
+                raise RuntimeError('User not found')
+            return f(user, *args, **kwargs)
+        except jwt.ExpiredSignatureError:
+            return jsonify(expired_msg), 401 # 401 is Unauthorized HTTP status code
+        except (jwt.InvalidTokenError, Exception) as e:
+            print(e)
+            return jsonify(invalid_msg), 401
+
+    return _verify
+
 @api.route('/register', methods=['POST'])
-def register():
+@token_required
+@login_required
+def register(jwt_user):
+    if jwt_user.id != current_user.id:
+        return jsonify(dict(message='Authentication required')), 400
+
     data = request.get_json()
     user = User(data['username'], bcrypt.generate_password_hash(data['password']))
     db.session.add(user)
     db.session.commit()
 
     return jsonify(dict(message='Register successfully')), 201
- 
+
 @api.route('/login', methods=['POST'])
 def login():
     data = request.get_json()
     username = data['username']
     password = data['password']
 
-    pw_hash = bcrypt.generate_password_hash(password).decode('utf-8')
     registered_user = User.query.filter_by(username=username).first()
-    if bcrypt.check_password_hash(pw_hash, password) == False:
-        return jsonify(dict(message='Username or password is invalid')), 401
+    if registered_user is None or bcrypt.check_password_hash(registered_user.password, password) == False:
+        return jsonify(dict(message='Username or password is invalid', authenticated=False)), 401
 
+    registered_user.last_login_at = datetime.utcnow()
+    db.session.add(registered_user)
+    db.session.commit()
     login_user(registered_user)
 
-    return jsonify(dict(message='Logged in successfully')), 200
+    token = jwt.encode({
+        'sub': registered_user.id,
+        'iat': datetime.utcnow(),
+        'exp': datetime.utcnow() + timedelta(minutes=30)}, BaseConfig().SECRET_KEY)
+
+    return jsonify(dict(message='Logged in successfully',
+                        authenticated=True,
+                        token=token.decode('utf-8'),
+                        user_data=dict(user_id=registered_user.id, last_login_at=registered_user.last_login_at))), 200
 
 @api.route('/logout', methods=['POST'])
+@token_required
 @login_required
-def logout():
+def logout(jwt_user):
+    if jwt_user.id != current_user.id:
+        return jsonify(dict(message='Authentication required')), 400
+
     logout_user()
 
     return jsonify(dict(message='Logged out successfully')), 200
@@ -65,10 +120,11 @@ def get_matches():
 
     return response
 
-@api.route('/get_matches_with_prediction/user_id/<int:user_id>', methods=['GET'])
+@api.route('/get_matches_with_prediction', methods=['GET'])
+@token_required
 @login_required
-def get_matches_with_predictions(user_id):
-    if user_id != current_user.id:
+def get_matches_with_predictions(jwt_user):
+    if jwt_user.id != current_user.id:
         return jsonify(dict(message='Authentication required')), 400
 
     r = requests.get(url=WC_URL)
@@ -81,7 +137,7 @@ def get_matches_with_predictions(user_id):
                 matches = matches + aRound['matches']
 
     if len(matches) > 0:
-        predictions = Prediction.query.filter(Prediction.user_id == user_id).all()
+        predictions = Prediction.query.filter(Prediction.user_id == jwt_user.id).all()
         for p in predictions:
             for m in matches:
                 if m['num'] == p.match_id:
@@ -97,32 +153,33 @@ def get_matches_with_predictions(user_id):
 
     return response
 
-@api.route('/get_predictions/user_id/<int:user_id>', methods=['GET'])
+@api.route('/get_predictions', methods=['GET'])
+@token_required
 @login_required
-def get_predictions(user_id):
-    if user_id != current_user.id:
+def get_predictions(jwt_user):
+    if jwt_user != current_user.id:
         return jsonify(dict(message='Authentication required')), 400
 
-    predictions = Prediction.query.filter(Prediction.user_id == user_id).all()
+    predictions = Prediction.query.filter(Prediction.user_id == jwt_user).all()
     return jsonify([p.to_dict() for p in predictions]), 200
 
 @api.route('/submit_prediction', methods=['POST'])
+@token_required
 @login_required
-def submit_prediction():
-    data = request.get_json()
-    user_id = data['user_id']
-    if user_id != current_user.id:
+def submit_prediction(jwt_user):
+    if jwt_user.id != current_user.id:
         return jsonify(dict(message='Authentication required')), 400
 
+    data = request.get_json()
     match_id = data['match_id']
     prediction = data['prediction']
 
-    p = Prediction.query.filter(Prediction.user_id == user_id).filter(Prediction.match_id == match_id).first()
+    p = Prediction.query.filter(Prediction.user_id == jwt_user.id).filter(Prediction.match_id == match_id).first()
     if p:
         p.prediction = prediction
         db.session.commit()
     else:
-        p = Prediction(user_id=user_id, match_id=match_id, prediction=prediction)
+        p = Prediction(user_id=jwt_user.id, match_id=match_id, prediction=prediction)
         db.session.add(p)
         db.session.commit()
 

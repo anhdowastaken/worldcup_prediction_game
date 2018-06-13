@@ -1,6 +1,6 @@
 <template>
     <div id="app">
-        <router-view @authenticated="setAuthenticated"/>
+        <router-view/>
     </div>
 </template>
 
@@ -9,23 +9,21 @@ export default {
     name: 'App',
     data() {
         return {
-            authenticated: false,
+
+        }
+    },
+    computed: {
+        isAuthenticated () {
+            return this.$store.getters.isAuthenticated
         }
     },
     mounted() {
-        if (!this.authenticated) {
+        if (!this.isAuthenticated) {
             this.$router.replace({ name: "Login" });
-        }
-    },
-    methods: {
-        setAuthenticated(status) {
-            this.authenticated = status;
-        },
-        logout() {
-            this.authenticated = false;
+        } else {
+            this.$router.replace({ name: "Home" });
         }
     }
-
 }
 </script>
 

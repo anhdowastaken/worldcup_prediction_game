@@ -184,25 +184,36 @@ import axios from 'axios'
 
 const API_URL = 'http://127.0.0.1:5000/api'
 
-export function fetchMatchesWithPredictions(user_id) {
-    return axios.create({withCredentials: true}).get(`${API_URL}/get_matches_with_prediction/user_id/${user_id}`)
+export function fetchMatchesWithPredictions(jwt) {
+    return axios.create({withCredentials: true})
+                .get(`${API_URL}/get_matches_with_prediction`,
+                     { headers: { Authorization: `Bearer: ${jwt}` } }
+                    )
 }
 
-export function submitPrediction(user_id, match_id, prediction) {
-    return axios.create({withCredentials: true}).post(`${API_URL}/submit_prediction`,
-                      { user_id: user_id,
-                        match_id: match_id,
+export function submitPrediction(jwt, match_id, prediction) {
+    return axios.create({withCredentials: true})
+                .post(`${API_URL}/submit_prediction`,
+                      { match_id: match_id,
                         prediction: prediction
-                      })
+                      },
+                      { headers: { Authorization: `Bearer: ${jwt}` } }
+                    )
 }
 
 export function submitLogin(username, password) {
-    return axios.create({withCredentials: true}).post(`${API_URL}/login`,
+    return axios.create({withCredentials: true})
+                .post(`${API_URL}/login`,
                       { username: username,
                         password: password
-                      })
+                      }
+                    )
 }
 
-export function submitLogout() {
-    return axios.create({withCredentials: true}).post(`${API_URL}/logout`)
+export function submitLogout(jwt) {
+    return axios.create({withCredentials: true})
+                .post(`${API_URL}/logout`,
+                      { },
+                      { headers: { Authorization: `Bearer: ${jwt}` } }
+                    )
 }

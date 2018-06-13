@@ -1,8 +1,8 @@
 <template>
     <div id="form-login">
         <h1>Login</h1>
-        <input type="text" name="username" v-model="input.username" placeholder="Username" />
-        <input type="password" name="password" v-model="input.password" placeholder="Password" />
+        <input type="text" name="username" v-model="username" placeholder="Username" />
+        <input type="password" name="password" v-model="password" placeholder="Password" />
         <button type="button" v-on:click="login()">Login</button>
     </div>
 </template>
@@ -14,22 +14,14 @@ export default {
     name: 'Login',
     data() {
         return {
-            input: {
-                username: "",
-                password: ""
-            }
+            username: "",
+            password: ""
         }
     },
     methods: {
         login: function() {
-            if (this.input.username != '' && this.input.password != '') {
-                submitLogin(this.input.username, this.input.password).then((response) => {
-                    this.$emit("authenticated", true);
-                    this.$router.replace({ name: "Home" });
-                })
-            } else {
-                console.log('Username or password is empty')
-            }
+            this.$store.dispatch('login', { username: this.username, password: this.password })
+                .then(() => this.$router.replace({ name: "Home" }))
         }
     }
 }

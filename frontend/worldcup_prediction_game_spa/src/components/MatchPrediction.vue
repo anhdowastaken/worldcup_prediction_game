@@ -12,6 +12,7 @@
 </template>
 
 <script>
+import { mapState } from 'vuex' 
 import { submitPrediction } from '@/api'
 
 export default {
@@ -30,10 +31,12 @@ export default {
             currentPrediction: this.prediction
         }
     },
+    computed: mapState({
+        jwt: state => state.jwt
+    }),
     methods: {
         submit: function(prediction) {
-            // FIXME: Hard code user_id
-            submitPrediction(1, this.num, prediction).then((response) => {
+            submitPrediction(this.jwt, this.num, prediction).then((response) => {
                 this.currentPrediction = prediction
             })
         }

@@ -2,6 +2,7 @@ import Vue from 'vue'
 import Router from 'vue-router'
 import Login from '@/components/Login'
 import Home from '@/components/Home'
+import store from '@/store'
 
 Vue.use(Router)
 
@@ -15,7 +16,14 @@ export default new Router({
         {
             path: '/home',
             name: 'Home',
-            component: Home
+            component: Home,
+            beforeEnter(to, from, next) {
+                if (!store.getters.isAuthenticated) {
+                    next('/')
+                } else {
+                    next()
+                }
+            }
         }
     ]
 })

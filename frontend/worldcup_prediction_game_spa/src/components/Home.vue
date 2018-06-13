@@ -22,11 +22,11 @@ export default {
         }
     },
     computed: mapState({
-        matches: state => state.matches
+        matches: state => state.matches,
+        jwt: state => state.jwt
     }),
     beforeMount() {
-        // // FIXME: Hard code user_id
-        this.$store.dispatch('loadMatchesWithPredictions', { user_id: 1})
+        this.$store.dispatch('loadMatchesWithPredictions', { jwt: this.jwt })
     }
 }
 </script>
