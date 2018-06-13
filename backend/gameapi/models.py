@@ -16,6 +16,7 @@ class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     username = db.Column(db.String, unique=True)
     password = db.Column(db.String)
+    role = db.Column(db.String, default='user')
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     last_login_at = db.Column(db.DateTime, default=datetime.utcnow)
 
@@ -24,7 +25,7 @@ class User(db.Model, UserMixin):
         self.password = bcrypt.generate_password_hash(password).decode('utf-8')
 
     def __repr__(self):
-        return '%d\t%s\t%s\t%s' % (self.id, self.username, self.password, self.last_login_at.strftime('%Y-%m-%d %H:%M:%S'))
+        return '%d\t%s\t%s\t%s' % (self.id, self.username, self.role, self.last_login_at.strftime('%Y-%m-%d %H:%M:%S'))
 
     def to_dict(self):
         return dict(user_id=self.id,

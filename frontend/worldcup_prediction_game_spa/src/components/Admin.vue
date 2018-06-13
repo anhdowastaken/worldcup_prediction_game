@@ -1,16 +1,23 @@
 <template>
-    <div id="form-register">
-        <h1>Register</h1>
-        <input type="text" name="username" v-model="username" placeholder="Username" />
-        <button type="button" v-on:click="register()">Register</button>
+    <div>
+        <logout></logout>
+        <div id="form-register">
+            <h1>Register</h1>
+            <input type="text" name="username" v-model="username" placeholder="Username" />
+            <button type="button" v-on:click="register()">Register</button>
+        </div>
     </div>
 </template>
 
 <script>
 import { mapState } from 'vuex' 
+import Logout from '@/components/Logout'
 
 export default {
-    name: 'Register',
+    name: 'Admin',
+    components: {
+        Logout
+    },
     data() {
         return {
             username: "",

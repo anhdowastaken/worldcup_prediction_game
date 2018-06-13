@@ -62,6 +62,7 @@ const mutations = {
     },
     setUserData(state, payload) {
         console.log('setUserData payload = ', payload)
+        localStorage.setItem('user_data', JSON.stringify(payload.userData))
         state.userData = payload.userData
     },
     setJwtToken(state, payload) {

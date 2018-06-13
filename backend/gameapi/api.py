@@ -17,7 +17,7 @@ from .application import bcrypt
 from .config import BaseConfig
 from .models import db, User, Prediction
 
-WC_URL = 'https://raw.githubusercontent.com/openfootball/world-cup.json/master/2014/worldcup.json'
+WC_URL = 'https://raw.githubusercontent.com/openfootball/world-cup.json/master/2018/worldcup.json'
 api = Blueprint('api', __name__)
 
 def token_required(f):
@@ -70,7 +70,7 @@ def register(jwt_user):
 
     return jsonify(dict(message='Register successfully',
                         registered=True,
-                        user_data=dict(id=user.id, username=user.username, password=password))), 201
+                        user_data=dict(id=user.id, username=username, password=password, role=user.role))), 201
 
 @api.route('/login', methods=['POST'])
 def login():
@@ -95,7 +95,7 @@ def login():
     return jsonify(dict(message='Logged in successfully',
                         authenticated=True,
                         token=token.decode('utf-8'),
-                        user_data=dict(user_id=registered_user.id, last_login_at=registered_user.last_login_at))), 200
+                        user_data=dict(user_id=registered_user.id, role=registered_user.role, last_login_at=registered_user.last_login_at))), 200
 
 @api.route('/logout', methods=['POST'])
 def logout():
