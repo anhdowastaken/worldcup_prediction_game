@@ -3,10 +3,10 @@
         <a href="#" v-on:click.prevent="submit(1)">{{ team1.name }} win</a>
         <a href="#" v-on:click.prevent="submit(0)">Draw</a>
         <a href="#" v-on:click.prevent="submit(2)">{{ team2.name }} win</a>
-        <p v-if="latestPrediction != null">
-            <span v-if="latestPrediction == 0">You predicted draw</span>
-            <span v-else-if="latestPrediction == 1">You predicted {{ team1.name }} win</span>
-            <span v-else-if="latestPrediction == 2">You predicted {{ team2.name }} win</span>
+        <p v-if="currentPrediction != null">
+            <span v-if="currentPrediction == 0">You predicted draw</span>
+            <span v-else-if="currentPrediction == 1">You predicted {{ team1.name }} win</span>
+            <span v-else-if="currentPrediction == 2">You predicted {{ team2.name }} win</span>
         </p>
     </div>
 </template>
@@ -27,14 +27,14 @@ export default {
     },
     data() {
         return {
-            latestPrediction: this.prediction
+            currentPrediction: this.prediction
         }
     },
     methods: {
         submit: function(prediction) {
             // FIXME: Hard code user_id
             submitPrediction(1, this.num, prediction).then((response) => {
-                this.latestPrediction = prediction
+                this.currentPrediction = prediction
             })
         }
     }
@@ -42,3 +42,4 @@ export default {
 </script>
 
 <style scoped>
+</style>

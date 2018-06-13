@@ -6,7 +6,7 @@
 </template>
 
 <script>
-import { fetchMatchesWithPredictions } from '@/api'
+import { mapState } from 'vuex' 
 import Logout from '@/components/Logout'
 import Match from '@/components/Match'
 
@@ -18,14 +18,15 @@ export default {
     },
     data () {
         return {
-            matches: []
+
         }
     },
+    computed: mapState({
+        matches: state => state.matches
+    }),
     beforeMount() {
-        // FIXME: Hard code user_id
-        fetchMatchesWithPredictions(1).then(response => {
-            this.matches = response.data
-        })
+        // // FIXME: Hard code user_id
+        this.$store.dispatch('loadMatchesWithPredictions', { user_id: 1})
     }
 }
 </script>

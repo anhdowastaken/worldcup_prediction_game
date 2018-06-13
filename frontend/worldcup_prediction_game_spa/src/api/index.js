@@ -186,12 +186,10 @@ const API_URL = 'http://127.0.0.1:5000/api'
 
 export function fetchMatchesWithPredictions(user_id) {
     return axios.create({withCredentials: true}).get(`${API_URL}/get_matches_with_prediction/user_id/${user_id}`)
-    // return axios.get(`${API_URL}/get_matches_with_prediction/user_id/${user_id}`)
 }
 
 export function submitPrediction(user_id, match_id, prediction) {
     return axios.create({withCredentials: true}).post(`${API_URL}/submit_prediction`,
-    // return axios.post(`${API_URL}/submit_prediction`,
                       { user_id: user_id,
                         match_id: match_id,
                         prediction: prediction
@@ -200,7 +198,6 @@ export function submitPrediction(user_id, match_id, prediction) {
 
 export function submitLogin(username, password) {
     return axios.create({withCredentials: true}).post(`${API_URL}/login`,
-    // return axios.post(`${API_URL}/login`,
                       { username: username,
                         password: password
                       })
@@ -208,5 +205,4 @@ export function submitLogin(username, password) {
 
 export function submitLogout() {
     return axios.create({withCredentials: true}).post(`${API_URL}/logout`)
-    // return axios.post(`${API_URL}/logout`)
 }
