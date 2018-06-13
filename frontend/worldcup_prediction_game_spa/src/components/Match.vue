@@ -17,9 +17,9 @@
         </div>
 
         <div class="match-prediction">
-            <a href="#" v-on:click.prevent="submit(1)">{{ this.match.team1.code }}</a>
-            <a href="#" v-on:click.prevent="submit(0)">DRAW</a>
-            <a href="#" v-on:click.prevent="submit(2)">{{ this.match.team2.code }}</a>
+            <button type="button" class="btn btn-default" v-if="enoughTimeToPredict" v-on:click.prevent="submit(1)">{{ this.match.team1.code }}</button>
+            <button type="button" class="btn btn-default" v-if="enoughTimeToPredict" v-on:click.prevent="submit(0)">DRAW</button>
+            <button type="button" class="btn btn-default" v-if="enoughTimeToPredict" v-on:click.prevent="submit(2)">{{ this.match.team2.code }}</button>
             <p v-if="currentPrediction != null">
                 <span v-if="currentPrediction == 0">You predicted a draw</span>
                 <span v-else-if="currentPrediction == 1">You predicted {{ this.match.team1.name }} win</span>
@@ -50,6 +50,16 @@ export default {
                 return state.jwt 
             } else {
                 return localStorage.jwt
+            }
+        },
+        enoughTimeToPredict: function() {
+            let match_time = this.match.date + ' ' + this.match.time + ' ' + this.match.timezone
+            let d = new Date(match_time)
+            let diff = d.getTime() - Date.now()
+            if (diff > 0) {
+                return true
+            } else {
+                return false
             }
         }
     }),
