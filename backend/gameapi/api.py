@@ -90,12 +90,7 @@ def login():
                         user_data=dict(user_id=registered_user.id, last_login_at=registered_user.last_login_at))), 200
 
 @api.route('/logout', methods=['POST'])
-@token_required
-@login_required
-def logout(jwt_user):
-    if jwt_user.id != current_user.id:
-        return jsonify(dict(message='Authentication required')), 400
-
+def logout():
     logout_user()
 
     return jsonify(dict(message='Logged out successfully')), 200

@@ -8,8 +8,6 @@
 </template>
 
 <script>
-import { submitLogin} from '@/api'
-
 export default {
     name: 'Login',
     data() {

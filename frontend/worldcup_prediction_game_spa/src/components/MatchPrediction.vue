@@ -32,7 +32,13 @@ export default {
         }
     },
     computed: mapState({
-        jwt: state => state.jwt
+        jwt: function(state) {
+            if (state.jwt) {
+                return state.jwt 
+            } else {
+                return localStorage.jwt
+            }
+        }
     }),
     methods: {
         submit: function(prediction) {

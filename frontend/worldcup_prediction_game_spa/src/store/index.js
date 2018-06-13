@@ -38,9 +38,10 @@ const actions = {
                 EventBus.$emit('failedAuthentication', error)
             })
     },
-    logout(context, { jwt }) {
-        return submitLogout(jwt)
+    logout(context) {
+        return submitLogout()
             .then(response => {
+                context.commit('setMatches', { matches: [] })
                 context.commit('setJwtToken', { jwt: '' })
                 context.commit('setUserData', { userData: {} })
             })
@@ -61,7 +62,7 @@ const mutations = {
     },
     setJwtToken(state, payload) {
         console.log('setJwtToken payload = ', payload)
-        localStorage.token = payload.jwt
+        localStorage.setItem('jwt', payload.jwt)
         state.jwt = payload.jwt
     }
 }
@@ -70,9 +71,12 @@ const getters = {
     // The getters object contains methods also, but in this case they serve to
     // access the state data utilizing some logic to return information.
     // Getters are useful for reducing code duplication and promote reusability across many components.
-    isAuthenticated (state) {
-        return isValidJwt(state.jwt)
-        // return isValidJwt(localStorage.token)
+    isAuthenticated(state) {
+        if (state.jwt) {
+            return isValidJwt(state.jwt)
+        } else {
+            return isValidJwt(localStorage.getItem('jwt'))
+        }
     }
 }
 

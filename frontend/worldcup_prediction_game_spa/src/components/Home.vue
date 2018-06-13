@@ -23,7 +23,13 @@ export default {
     },
     computed: mapState({
         matches: state => state.matches,
-        jwt: state => state.jwt
+        jwt: function(state) {
+            if (state.jwt) {
+                return state.jwt 
+            } else {
+                return localStorage.jwt
+            }
+        }
     }),
     beforeMount() {
         this.$store.dispatch('loadMatchesWithPredictions', { jwt: this.jwt })

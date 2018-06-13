@@ -212,8 +212,5 @@ export function submitLogin(username, password) {
 
 export function submitLogout(jwt) {
     return axios.create({withCredentials: true})
-                .post(`${API_URL}/logout`,
-                      { },
-                      { headers: { Authorization: `Bearer: ${jwt}` } }
-                    )
+                .post(`${API_URL}/logout`)
 }
