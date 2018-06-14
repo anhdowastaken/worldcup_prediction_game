@@ -88,6 +88,42 @@ def register(jwt_user):
     else:
         return jsonify(dict(message='User existed', registered=False)), 400
 
+@api.route('/reset_password', methods=['POST'])
+@token_required
+@login_required
+def reset_password(jwt_user):
+    if jwt_user.id != current_user.id:
+        # User ID stored in JWT token does not match the one stored in session
+        # It's better to re-authenticate
+        return jsonify(dict(message='Re-authentication required', registered=False)), 401
+
+    # Only admin has permission to reset password
+    if current_user.role != 'admin':
+        return jsonify(dict(message='Permission denied', registered=False)), 403
+
+    data = request.get_json()
+    username = data['username']
+    registered_user = User.query.filter_by(username=username).first()
+    if registered_user is not None:
+        # Generate random string containing 8 characters
+        password = ''.join(random.choice(string.ascii_uppercase + string.ascii_lowercase + string.digits) for _ in range(8))
+        registered_user.password = password
+        try:
+            db.session.commit()
+
+            return jsonify(dict(message='Reset successfully',
+                                registered=True,
+                                user_data=dict(id=registered_user.id,
+                                               username=username,
+                                               password=password,
+                                               role=registered_user.role))), 201
+        except (SQLAlchemyError) as e:
+            # TODO: Use logger
+            print(e)
+            return jsonify(dict(message='Reset failed', registered=False)), 500
+    else:
+        return jsonify(dict(message='User doesn\'t exist', registered=False)), 400
+
 @api.route('/login', methods=['POST'])
 def login():
     data = request.get_json()

@@ -6,6 +6,7 @@ import { fetchMatchesWithPredictions } from '@/api'
 import { submitLogin } from '@/api'
 import { submitLogout } from '@/api'
 import { submitRegister } from '@/api'
+import { submitResetPassword } from '@/api'
 import { isValidJwt, EventBus } from '@/utils'
 
 Vue.use(Vuex)
@@ -74,6 +75,26 @@ const actions = {
     },
     register(context, { jwt, username }) {
         return submitRegister(jwt, username)
+            .then(response => {
+                if (response.status === 201) {
+                    // TODO: Use HTML dialog
+                    alert(response.data['message'])
+                    alert(response.data['user_data']['password'])
+                }
+            })
+            .catch(error => {
+                if (error.response.data['message']) {
+                    // TODO: Use HTML dialog
+                    alert(error.response.data['message'])
+                } else if (error) {
+                    alert(error)
+                } else {
+                    alert('Error')
+                }
+            })
+    },
+    resetPassword(context, { jwt, username }) {
+        return submitResetPassword(jwt, username)
             .then(response => {
                 if (response.status === 201) {
                     // TODO: Use HTML dialog

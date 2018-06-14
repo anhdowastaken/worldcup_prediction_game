@@ -222,3 +222,11 @@ export function submitRegister(jwt, username) {
                       { headers: { Authorization: `Bearer: ${jwt}` } }
                     )
 }
+
+export function submitResetPassword(jwt, username) {
+    return axios.create({withCredentials: true})
+                .post(`${API_URL}/reset_password`,
+                      { username: username },
+                      { headers: { Authorization: `Bearer: ${jwt}` } }
+                    )
+}

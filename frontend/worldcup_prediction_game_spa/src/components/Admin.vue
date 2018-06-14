@@ -15,8 +15,16 @@
         <form id="form-register" class="form-inline">
             <h3>Register</h3>
             <div class="form-group">
-                <input type="text" class="form-control" name="username" v-model="username" placeholder="Username" />
+                <input type="text" class="form-control" name="username" v-model="username_to_register" placeholder="Username" />
                 <button type="button" class="btn btn-default" v-on:click="register()">Register</button>
+            </div>
+        </form>
+
+        <form id="form-reset-password" class="form-inline">
+            <h3>Reset password</h3>
+            <div class="form-group">
+                <input type="text" class="form-control" name="username" v-model="username_to_reset_password" placeholder="Username" />
+                <button type="button" class="btn btn-default" v-on:click="resetPassword()">Reset</button>
             </div>
         </form>
     </div>
@@ -34,7 +42,8 @@ export default {
     },
     data() {
         return {
-            username: "",
+            username_to_register: "",
+            username_to_reset_password: ""
         }
     },
     computed: mapState({
@@ -55,8 +64,12 @@ export default {
     }),
     methods: {
         register: function() {
-            this.$store.dispatch('register', { jwt: this.jwt, username: this.username })
-            this.username = ""
+            this.$store.dispatch('register', { jwt: this.jwt, username: this.username_to_register })
+            this.username_to_register = ""
+        },
+        resetPassword: function() {
+            this.$store.dispatch('resetPassword', { jwt: this.jwt, username: this.username_to_reset_password})
+            this.username_to_reset_password = ""
         }
     }
 }
