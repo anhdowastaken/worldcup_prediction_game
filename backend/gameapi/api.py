@@ -9,6 +9,10 @@ import requests
 import random
 import string
 from datetime import datetime, timedelta
+import time
+from dateutil import parser
+from dateutil.tz import UTC
+import pytz
 from functools import wraps
 from flask import Blueprint, jsonify, request, Response, redirect
 from flask_login import current_user, login_user, logout_user, login_required
@@ -238,7 +242,34 @@ def submit_prediction(jwt_user):
     match_id = data['match_id']
     prediction = data['prediction']
 
-    # TODO: Do not allow update prediction if the match started
+    # Do not allow update prediction if the match started
+    current_time = int(time.time())
+
+    r = requests.get(url=WC_URL)
+    match = None
+    matches = []
+    rounds = r.json()['rounds']
+    if rounds:
+        for aRound in rounds:
+            if aRound['matches'] and len(aRound['matches']) > 0:
+                matches = matches + aRound['matches']
+    for m in matches:
+        if m['num'] == match_id:
+            match = m
+    if match:
+        match_time_str = match['date'] + ' ' + match['time'] + ' ' + (match['timezone'] if match['timezone'] else '')
+        match_time = parser.parse(match_time_str)
+        match_time = match_time.replace(tzinfo=pytz.utc) + match_time.utcoffset()
+        match_time = int(match_time.timestamp())
+        diff = match_time - current_time
+        print('diff=%d' % diff)
+
+        if diff < 0:
+            return jsonify(dict(message='Not enough time to predict',
+                                submitted=False), 400)
+    else:
+        return jsonify(dict(message='Match doesn\'t exist',
+                            submitted=False), 400)
 
     p = Prediction.query.filter(Prediction.user_id == jwt_user.id).filter(Prediction.match_id == match_id).first()
     try:

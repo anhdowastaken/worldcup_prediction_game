@@ -16,14 +16,21 @@
         </div>
 
         <div class="match-prediction">
-            <button type="button" class="btn btn-default" v-if="enoughTimeToPredict" v-on:click.prevent="submit(1)">{{ this.match.team1.code }}</button>
-            <button type="button" class="btn btn-default" v-if="enoughTimeToPredict" v-on:click.prevent="submit(0)">DRAW</button>
-            <button type="button" class="btn btn-default" v-if="enoughTimeToPredict" v-on:click.prevent="submit(2)">{{ this.match.team2.code }}</button>
-            <p v-if="currentPrediction != null">
-                <span v-if="currentPrediction == 0">You predicted a draw</span>
-                <span v-else-if="currentPrediction == 1">You predicted {{ this.match.team1.name }} win</span>
-                <span v-else-if="currentPrediction == 2">You predicted {{ this.match.team2.name }} win</span>
-            </p>
+            <button type="button"
+                    class="btn btn-default"
+                    v-if="enoughTimeToPredict"
+                    v-bind:class="{ 'btn-success': isTeam1Chosen }"
+                    v-on:click.prevent="submit(1)">{{ this.match.team1.code }}</button>
+            <button type="button"
+                    class="btn btn-default"
+                    v-if="enoughTimeToPredict"
+                    v-bind:class="{ 'btn-success': isDrawChosen }"
+                    v-on:click.prevent="submit(0)">DRAW</button>
+            <button type="button"
+                    class="btn btn-default"
+                    v-if="enoughTimeToPredict"
+                    v-bind:class="{ 'btn-success': isTeam2Chosen }"
+                    v-on:click.prevent="submit(2)">{{ this.match.team2.code }}</button>
         </div>
     </div>
 </template>
@@ -68,26 +75,49 @@ export default {
             let d = new Date(match_time.replace(/-/g, "/"))
             let diff = d.getTime() - Date.now()
             return msToTime(diff)
+        },
+        isTeam1Chosen: function() {
+            if (this.currentPrediction == 1) {
+                return true
+            } else {
+                return false
+            }
+        },
+        isTeam2Chosen: function() {
+            if (this.currentPrediction == 2) {
+                return true
+            } else {
+                return false
+            }
+        },
+        isDrawChosen: function() {
+            if (this.currentPrediction == 0) {
+                return true
+            } else {
+                return false
+            }
         }
     }),
     methods: {
         submit: function(prediction) {
-            submitPrediction(this.jwt, this.match.num, prediction)
-                .then(response => {
-                    if (response.status === 201) {
-                        this.currentPrediction = prediction
-                    }
-                })
-                .catch(error => {
-                    if (error.response.data['message']) {
-                        // TODO: Use HTML dialog
-                        alert(error.response.data['message'])
-                    } else if (error) {
-                        alert(error)
-                    } else {
-                        alert('Error')
-                    }
-                })
+            if (prediction != this.currentPrediction) {
+                submitPrediction(this.jwt, this.match.num, prediction)
+                    .then(response => {
+                        if (response.status === 201) {
+                            this.currentPrediction = prediction
+                        }
+                    })
+                    .catch(error => {
+                        if (error.response.data['message']) {
+                            // TODO: Use HTML dialog
+                            alert(error.response.data['message'])
+                        } else if (error) {
+                            alert(error)
+                        } else {
+                            alert('Error')
+                        }
+                    })
+            }
         }
     }
 }
