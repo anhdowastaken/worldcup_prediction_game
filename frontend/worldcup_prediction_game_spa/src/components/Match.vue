@@ -53,7 +53,8 @@ export default {
         },
         enoughTimeToPredict: function() {
             let match_time = this.match.date + ' ' + this.match.time + ' ' + (this.match.timezone ? this.match.timezone : '')
-            let d = new Date(match_time)
+            // Replace "-" by "/" to avoid issue on Safari
+            let d = new Date(match_time.replace(/-/g, "/"))
             let diff = d.getTime() - Date.now()
             if (diff > 0) {
                 return true
@@ -63,7 +64,8 @@ export default {
         },
         timeToPredict: function() {
             let match_time = this.match.date + ' ' + this.match.time + ' ' + (this.match.timezone ? this.match.timezone : '')
-            let d = new Date(match_time)
+            // Replace "-" by "/" to avoid issue on Safari
+            let d = new Date(match_time.replace(/-/g, "/"))
             let diff = d.getTime() - Date.now()
             return msToTime(diff)
         }

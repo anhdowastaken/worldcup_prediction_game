@@ -128,7 +128,8 @@ const mutations = {
             }
 
             let match_time = match.date + ' ' + match.time + ' ' + (match.timezone ? match.timezone : '')
-            let d = new Date(match_time)
+            // Replace "-" by "/" to avoid issue on Safari
+            let d = new Date(match_time.replace(/-/g, "/"))
             match['local_match_time'] = d.toLocaleString()
         }
         state.matches = payload.matches
