@@ -26,17 +26,40 @@ const actions = {
     // handle asynchronous operations such as AJAX calls to an external service or API.
     loadMatchesWithPredictions(context, { jwt }) {
         return fetchMatchesWithPredictions(jwt)
-            .then((response) => context.commit('setMatches', { matches: response.data }))
+            .then((response) => {
+                if (response.status === 200) {
+                    context.commit('setMatches', { matches: response.data })
+                } else if (response.status === 401) {
+                    // TODO: Use HTML dialog
+                    alert(response.data['message'])
+                } else {
+                    // TODO: Use HTML dialog
+                    alert(response.statusText)
+                }
+            })
+            .catch(error => {
+                alert(error)
+            })
     },
     login(context, { username, password }) {
         return submitLogin(username, password)
             .then(response => {
                 // TODO: Check return from backend
-                context.commit('setJwtToken', { jwt: response.data['token'] })
-                context.commit('setUserData', { userData: response.data['user_data'] })
+                if (response.status === 200) {
+                    context.commit('setJwtToken', { jwt: response.data['token'] })
+                    context.commit('setUserData', { userData: response.data['user_data'] })
+                    // TODO: Use HTML dialog
+                    alert(response.data['message'])
+                } else if (response.status === 401 || response.status === 500) {
+                    // TODO: Use HTML dialog
+                    alert(response.data['message'])
+                } else {
+                    // TODO: Use HTML dialog
+                    alert(response.statusText)
+                }
             })
             .catch(error => {
-                console.log('Error Authenticating: ', error)
+                alert('Error Authenticating: ', error)
             })
     },
     logout(context) {
@@ -46,9 +69,28 @@ const actions = {
                 context.commit('setJwtToken', { jwt: '' })
                 context.commit('setUserData', { userData: {} })
             })
+            .catch(error => {
+                alert(error)
+            })
     },
     register(context, { jwt, username }) {
         return submitRegister(jwt, username)
+            .then(response => {
+                if (response.status === 201) {
+                    // TODO: Use HTML dialog
+                    alert(response.data['message'])
+                    alert(response.data['user_data'])
+                } else if (response.status === 401 || response.status === 400) {
+                    // TODO: Use HTML dialog
+                    alert(response.data['message'])
+                } else {
+                    // TODO: Use HTML dialog
+                    alert(response.statusText)
+                }
+            })
+            .catch(error => {
+                alert(error)
+            })
     }
 }
 
@@ -75,6 +117,7 @@ const mutations = {
         if (payload.userData['last_login_at']) {
             // Backend returns timestamp in second (UTC)
             let d = new Date()
+            // FIXME: Should force backend return timestamp of UTC+0?
             d = new Date(payload.userData['last_login_at'] * 1000 - d.getTimezoneOffset() * 60 * 1000)
             payload.userData['last_login_at'] = d.toLocaleString()
         }

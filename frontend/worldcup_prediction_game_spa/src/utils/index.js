@@ -24,6 +24,10 @@ export function isEmpty(obj) {
 }
 
 export function msToTime(s) {
+    if (s < 0) {
+        return ''
+    }
+
     let ms = s % 1000;
     s = (s - ms) / 1000;
     let secs = s % 60;

@@ -48,6 +48,7 @@ def token_required(f):
         except jwt.ExpiredSignatureError:
             return jsonify(expired_msg), 401 # 401 is Unauthorized HTTP status code
         except (jwt.InvalidTokenError, Exception) as e:
+            # TODO: Use logger
             print(e)
             return jsonify(invalid_msg), 401
 
@@ -73,12 +74,13 @@ def register(jwt_user):
         db.session.commit()
 
         return jsonify(dict(message='Register successfully',
-                        registered=True,
-                        user_data=dict(id=user.id,
-                                       username=username,
-                                       password=password,
-                                       role=user.role))), 201
+                            registered=True,
+                            user_data=dict(id=user.id,
+                                           username=username,
+                                           password=password,
+                                           role=user.role))), 201
     except (SQLAlchemyError) as e:
+        # TODO: Use logger
         print(e)
         return jsonify(dict(message='Register failed'), registered=False), 400
 
@@ -195,6 +197,8 @@ def submit_prediction(jwt_user):
     match_id = data['match_id']
     prediction = data['prediction']
 
+    # TODO: Do not allow update prediction if the match started
+
     p = Prediction.query.filter(Prediction.user_id == jwt_user.id).filter(Prediction.match_id == match_id).first()
     try:
         if p:
@@ -209,6 +213,7 @@ def submit_prediction(jwt_user):
                             submitted=True,
                             data=p.to_dict())), 201
     except (SQLAlchemyError) as e:
+        # TODO: Use logger
         print(e)
         return jsonify(dict(message='Submit prediction failed',
                             submitted=False), 500)
