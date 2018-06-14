@@ -107,6 +107,7 @@ def reset_password(jwt_user):
     if registered_user is not None:
         # Generate random string containing 8 characters
         password = ''.join(random.choice(string.ascii_uppercase + string.ascii_lowercase + string.digits) for _ in range(8))
+        password = bcrypt.generate_password_hash(password).decode('utf-8')
         registered_user.password = password
         try:
             db.session.commit()
