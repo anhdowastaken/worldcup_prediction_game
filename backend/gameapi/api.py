@@ -65,24 +65,28 @@ def register(jwt_user):
 
     data = request.get_json()
     username = data['username']
-    # Generate random string containing 8 characters
-    password = ''.join(random.choice(string.ascii_uppercase + string.ascii_lowercase + string.digits) for _ in range(8))
+    registered_user = User.query.filter_by(username=username).first()
+    if registered_user is None:
+        # Generate random string containing 8 characters
+        password = ''.join(random.choice(string.ascii_uppercase + string.ascii_lowercase + string.digits) for _ in range(8))
 
-    user = User(username, password)
-    try:
-        db.session.add(user)
-        db.session.commit()
+        user = User(username, password)
+        try:
+            db.session.add(user)
+            db.session.commit()
 
-        return jsonify(dict(message='Register successfully',
-                            registered=True,
-                            user_data=dict(id=user.id,
-                                           username=username,
-                                           password=password,
-                                           role=user.role))), 201
-    except (SQLAlchemyError) as e:
-        # TODO: Use logger
-        print(e)
-        return jsonify(dict(message='Register failed', registered=False)), 400
+            return jsonify(dict(message='Register successfully',
+                                registered=True,
+                                user_data=dict(id=user.id,
+                                               username=username,
+                                               password=password,
+                                               role=user.role))), 201
+        except (SQLAlchemyError) as e:
+            # TODO: Use logger
+            print(e)
+            return jsonify(dict(message='Register failed', registered=False)), 500
+    else:
+        return jsonify(dict(message='User existed', registered=False)), 400
 
 @api.route('/login', methods=['POST'])
 def login():

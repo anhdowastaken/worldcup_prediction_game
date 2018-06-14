@@ -12,11 +12,13 @@
             </div>
         </div>
 
-        <div id="form-register">
+        <form id="form-register" class="form-inline">
             <h3>Register</h3>
-            <input type="text" name="username" v-model="username" placeholder="Username" />
-            <button type="button" v-on:click="register()">Register</button>
-        </div>
+            <div class="form-group">
+                <input type="text" class="form-control" name="username" v-model="username" placeholder="Username" />
+                <button type="button" class="btn btn-default" v-on:click="register()">Register</button>
+            </div>
+        </form>
     </div>
 </template>
 
@@ -54,6 +56,7 @@ export default {
     methods: {
         register: function() {
             this.$store.dispatch('register', { jwt: this.jwt, username: this.username })
+            this.username = ""
         }
     }
 }

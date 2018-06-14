@@ -78,7 +78,7 @@ const actions = {
                 if (response.status === 201) {
                     // TODO: Use HTML dialog
                     alert(response.data['message'])
-                    alert(response.data['user_data'])
+                    alert(response.data['user_data']['password'])
                 }
             })
             .catch(error => {
