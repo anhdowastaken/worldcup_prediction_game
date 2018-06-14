@@ -12,6 +12,7 @@ from datetime import datetime, timedelta
 from functools import wraps
 from flask import Blueprint, jsonify, request, Response, redirect
 from flask_login import current_user, login_user, logout_user, login_required
+from sqlalchemy.exc import SQLAlchemyError
 import jwt
 from .application import bcrypt
 from .config import BaseConfig
@@ -57,7 +58,9 @@ def token_required(f):
 @login_required
 def register(jwt_user):
     if jwt_user.id != current_user.id:
-        return jsonify(dict(message='Authentication required'), registered=False), 400
+        # User ID stored in JWT token does not match the one stored in session
+        # It's better to re-authenticate
+        return jsonify(dict(message='Authentication required'), registered=False), 401
 
     data = request.get_json()
     username = data['username']
@@ -65,15 +68,19 @@ def register(jwt_user):
     password = ''.join(random.choice(string.ascii_uppercase + string.ascii_lowercase + string.digits) for _ in range(8))
 
     user = User(username, password)
-    db.session.add(user)
-    db.session.commit()
+    try:
+        db.session.add(user)
+        db.session.commit()
 
-    return jsonify(dict(message='Register successfully',
+        return jsonify(dict(message='Register successfully',
                         registered=True,
                         user_data=dict(id=user.id,
                                        username=username,
                                        password=password,
                                        role=user.role))), 201
+    except (SQLAlchemyError) as e:
+        print(e)
+        return jsonify(dict(message='Register failed'), registered=False), 400
 
 @api.route('/login', methods=['POST'])
 def login():
@@ -86,22 +93,27 @@ def login():
         return jsonify(dict(message='Username or password is invalid', authenticated=False)), 401
 
     registered_user.last_login_at = datetime.utcnow()
-    db.session.add(registered_user)
-    db.session.commit()
-    login_user(registered_user)
+    try:
+        db.session.add(registered_user)
+        db.session.commit()
+    except:
+        pass
 
-    token = jwt.encode({
-        'sub': registered_user.id,
-        'iat': datetime.utcnow(),
-        'exp': datetime.utcnow() + timedelta(minutes=30)}, BaseConfig().SECRET_KEY)
+    if login_user(registered_user):
+        token = jwt.encode({
+            'sub': registered_user.id,
+            'iat': datetime.utcnow(),
+            'exp': datetime.utcnow() + timedelta(minutes=30)}, BaseConfig().SECRET_KEY)
 
-    return jsonify(dict(message='Logged in successfully',
-                        authenticated=True,
-                        token=token.decode('utf-8'),
-                        user_data=dict(user_id=registered_user.id,
-                                       username=registered_user.username,
-                                       role=registered_user.role,
-                                       last_login_at=int(registered_user.last_login_at.timestamp())))), 200
+        return jsonify(dict(message='Logged in successfully',
+                            authenticated=True,
+                            token=token.decode('utf-8'),
+                            user_data=dict(user_id=registered_user.id,
+                                           username=registered_user.username,
+                                           role=registered_user.role,
+                                           last_login_at=int(registered_user.last_login_at.timestamp())))), 200
+    else:
+        return jsonify(dict(message='Logged in failed', authenticated=False)), 500
 
 @api.route('/logout', methods=['POST'])
 def logout():
@@ -134,7 +146,7 @@ def get_matches():
 @login_required
 def get_matches_with_predictions(jwt_user):
     if jwt_user.id != current_user.id:
-        return jsonify(dict(message='Authentication required')), 400
+        return jsonify(dict(message='Authentication required')), 401
 
     r = requests.get(url=WC_URL)
 
@@ -167,7 +179,7 @@ def get_matches_with_predictions(jwt_user):
 @login_required
 def get_predictions(jwt_user):
     if jwt_user != current_user.id:
-        return jsonify(dict(message='Authentication required')), 400
+        return jsonify(dict(message='Authentication required')), 401
 
     predictions = Prediction.query.filter(Prediction.user_id == jwt_user).all()
     return jsonify([p.to_dict() for p in predictions]), 200
@@ -177,19 +189,26 @@ def get_predictions(jwt_user):
 @login_required
 def submit_prediction(jwt_user):
     if jwt_user.id != current_user.id:
-        return jsonify(dict(message='Authentication required')), 400
+        return jsonify(dict(message='Authentication required')), 401
 
     data = request.get_json()
     match_id = data['match_id']
     prediction = data['prediction']
 
     p = Prediction.query.filter(Prediction.user_id == jwt_user.id).filter(Prediction.match_id == match_id).first()
-    if p:
-        p.prediction = prediction
-        db.session.commit()
-    else:
-        p = Prediction(user_id=jwt_user.id, match_id=match_id, prediction=prediction)
-        db.session.add(p)
-        db.session.commit()
+    try:
+        if p:
+            p.prediction = prediction
+            db.session.commit()
+        else:
+            p = Prediction(user_id=jwt_user.id, match_id=match_id, prediction=prediction)
+            db.session.add(p)
+            db.session.commit()
 
-    return jsonify(p.to_dict()), 201
+        return jsonify(dict(message='Submit prediction successfully',
+                            submitted=True,
+                            data=p.to_dict())), 201
+    except (SQLAlchemyError) as e:
+        print(e)
+        return jsonify(dict(message='Submit prediction failed',
+                            submitted=False), 500)
