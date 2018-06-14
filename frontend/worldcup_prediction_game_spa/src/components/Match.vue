@@ -1,12 +1,11 @@
 <template>
-    <div class="match">
-
+    <div class="col-lg-6 match">
         <div class="match-detail">
             <div class="match-title">
-                <h2>[{{ this.match.group }}] <span class="team-name">{{ this.match.team1.name }}</span> vs <span class="team-name">{{ this.match.team2.name }}</span></h2>
+                <h4>[{{ this.match.group }}] <span class="team-name">{{ this.match.team1.name }}</span> vs <span class="team-name">{{ this.match.team2.name }}</span></h4>
             </div>
             <div class="match-information">
-                <div class="time"><span>{{ this.match.local_match_time }}</span></div>
+                <p>{{ this.match.local_match_time }}</p>
                 <p v-if="enoughTimeToPredict">{{ timeToPredict }} to predict</p>
             </div>
             <div class="match-result">
@@ -26,7 +25,6 @@
                 <span v-else-if="currentPrediction == 2">You predicted {{ this.match.team2.name }} win</span>
             </p>
         </div>
-
     </div>
 </template>
 
@@ -81,4 +79,6 @@ export default {
 </script>
 
 <style scoped>
-</style>
+h4 {
+  margin-top: 28px;
+}</style>

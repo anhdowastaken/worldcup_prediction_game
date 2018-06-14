@@ -1,6 +1,6 @@
 <template>
     <div>
-        <h3>{{ this.userData['username'] }}</h3>
+        <h3 class="text-muted">{{ this.userData['username'] }}</h3>
         <p>Last login: {{ this.userData['last_login_at'] }}</p>
         <p><span v-show="point > 0">-</span>{{ this.point }} point<span v-show="point > 0">s</span></p>
     </div>

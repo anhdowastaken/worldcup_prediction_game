@@ -31,12 +31,12 @@ const actions = {
     login(context, { username, password }) {
         return submitLogin(username, password)
             .then(response => {
+                // TODO: Check return from backend
                 context.commit('setJwtToken', { jwt: response.data['token'] })
                 context.commit('setUserData', { userData: response.data['user_data'] })
             })
             .catch(error => {
                 console.log('Error Authenticating: ', error)
-                EventBus.$emit('failedAuthentication', error)
             })
     },
     logout(context) {
