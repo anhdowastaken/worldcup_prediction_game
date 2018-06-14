@@ -61,7 +61,7 @@ def register(jwt_user):
     if jwt_user.id != current_user.id:
         # User ID stored in JWT token does not match the one stored in session
         # It's better to re-authenticate
-        return jsonify(dict(message='Re-authentication required'), registered=False), 401
+        return jsonify(dict(message='Re-authentication required', registered=False)), 401
 
     data = request.get_json()
     username = data['username']
@@ -82,7 +82,7 @@ def register(jwt_user):
     except (SQLAlchemyError) as e:
         # TODO: Use logger
         print(e)
-        return jsonify(dict(message='Register failed'), registered=False), 400
+        return jsonify(dict(message='Register failed', registered=False)), 400
 
 @api.route('/login', methods=['POST'])
 def login():
