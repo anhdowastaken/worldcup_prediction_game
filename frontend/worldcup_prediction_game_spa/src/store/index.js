@@ -29,37 +29,36 @@ const actions = {
             .then((response) => {
                 if (response.status === 200) {
                     context.commit('setMatches', { matches: response.data })
-                } else if (response.status === 401) {
-                    // TODO: Use HTML dialog
-                    alert(response.data['message'])
-                } else {
-                    // TODO: Use HTML dialog
-                    alert(response.statusText)
                 }
             })
             .catch(error => {
-                alert(error)
+                if (error.response.data['message']) {
+                    // TODO: Use HTML dialog
+                    alert(error.response.data['message'])
+                } else if (error) {
+                    alert(error)
+                } else {
+                    alert('Error')
+                }
             })
     },
     login(context, { username, password }) {
         return submitLogin(username, password)
             .then(response => {
-                // TODO: Check return from backend
                 if (response.status === 200) {
                     context.commit('setJwtToken', { jwt: response.data['token'] })
                     context.commit('setUserData', { userData: response.data['user_data'] })
-                    // TODO: Use HTML dialog
-                    alert(response.data['message'])
-                } else if (response.status === 401 || response.status === 500) {
-                    // TODO: Use HTML dialog
-                    alert(response.data['message'])
-                } else {
-                    // TODO: Use HTML dialog
-                    alert(response.statusText)
                 }
             })
             .catch(error => {
-                alert('Error Authenticating: ', error)
+                if (error.response.data['message']) {
+                    // TODO: Use HTML dialog
+                    alert(error.response.data['message'])
+                } else if (error) {
+                    alert('Error Authenticating: ', error)
+                } else {
+                    alert('Error')
+                }
             })
     },
     logout(context) {
@@ -80,16 +79,17 @@ const actions = {
                     // TODO: Use HTML dialog
                     alert(response.data['message'])
                     alert(response.data['user_data'])
-                } else if (response.status === 401 || response.status === 400) {
-                    // TODO: Use HTML dialog
-                    alert(response.data['message'])
-                } else {
-                    // TODO: Use HTML dialog
-                    alert(response.statusText)
                 }
             })
             .catch(error => {
-                alert(error)
+                if (error.response.data['message']) {
+                    // TODO: Use HTML dialog
+                    alert(error.response.data['message'])
+                } else if (error) {
+                    alert(error)
+                } else {
+                    alert('Error')
+                }
             })
     }
 }

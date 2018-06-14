@@ -61,7 +61,7 @@ def register(jwt_user):
     if jwt_user.id != current_user.id:
         # User ID stored in JWT token does not match the one stored in session
         # It's better to re-authenticate
-        return jsonify(dict(message='Authentication required'), registered=False), 401
+        return jsonify(dict(message='Re-authentication required'), registered=False), 401
 
     data = request.get_json()
     username = data['username']
@@ -148,7 +148,7 @@ def get_matches():
 @login_required
 def get_matches_with_predictions(jwt_user):
     if jwt_user.id != current_user.id:
-        return jsonify(dict(message='Authentication required')), 401
+        return jsonify(dict(message='Re-authentication required')), 401
 
     r = requests.get(url=WC_URL)
 
@@ -181,7 +181,7 @@ def get_matches_with_predictions(jwt_user):
 @login_required
 def get_predictions(jwt_user):
     if jwt_user != current_user.id:
-        return jsonify(dict(message='Authentication required')), 401
+        return jsonify(dict(message='Re-authentication required')), 401
 
     predictions = Prediction.query.filter(Prediction.user_id == jwt_user).all()
     return jsonify([p.to_dict() for p in predictions]), 200
@@ -191,7 +191,7 @@ def get_predictions(jwt_user):
 @login_required
 def submit_prediction(jwt_user):
     if jwt_user.id != current_user.id:
-        return jsonify(dict(message='Authentication required')), 401
+        return jsonify(dict(message='Re-authentication required')), 401
 
     data = request.get_json()
     match_id = data['match_id']

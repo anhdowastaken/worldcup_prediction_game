@@ -70,9 +70,22 @@ export default {
     }),
     methods: {
         submit: function(prediction) {
-            submitPrediction(this.jwt, this.match.num, prediction).then((response) => {
-                this.currentPrediction = prediction
-            })
+            submitPrediction(this.jwt, this.match.num, prediction)
+                .then(response => {
+                    if (response.status === 201) {
+                        this.currentPrediction = prediction
+                    }
+                })
+                .catch(error => {
+                    if (error.response.data['message']) {
+                        // TODO: Use HTML dialog
+                        alert(error.response.data['message'])
+                    } else if (error) {
+                        alert(error)
+                    } else {
+                        alert('Error')
+                    }
+                })
         }
     }
 }
