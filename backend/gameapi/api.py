@@ -264,12 +264,12 @@ def submit_prediction(jwt_user):
         diff = match_time - current_time
         print('diff=%d' % diff)
 
-        if diff < 0:
+        if diff <= 0:
             return jsonify(dict(message='Not enough time to predict',
-                                submitted=False), 400)
+                                submitted=False)), 400
     else:
         return jsonify(dict(message='Match doesn\'t exist',
-                            submitted=False), 400)
+                            submitted=False)), 400
 
     p = Prediction.query.filter(Prediction.user_id == jwt_user.id).filter(Prediction.match_id == match_id).first()
     try:
