@@ -25,7 +25,7 @@ export default {
     methods: {
         login: function() {
             this.$store.dispatch('login', { username: this.username, password: this.password })
-                .then(() => this.$router.replace({ name: "Home" }))
+                .then(() => this.$router.push({ name: "Home" }))
         }
     }
 }

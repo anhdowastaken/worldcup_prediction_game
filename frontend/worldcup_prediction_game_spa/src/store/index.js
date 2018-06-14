@@ -1,13 +1,14 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 
+// import router from '@/router'
 // imports of AJAX functions go here
 import { fetchMatchesWithPredictions } from '@/api'
 import { submitLogin } from '@/api'
 import { submitLogout } from '@/api'
 import { submitRegister } from '@/api'
 import { submitResetPassword } from '@/api'
-import { isValidJwt, EventBus } from '@/utils'
+import { isValidJwt } from '@/utils'
 
 Vue.use(Vuex)
 
@@ -36,6 +37,16 @@ const actions = {
                 if (error.response.data['message']) {
                     // TODO: Use HTML dialog
                     alert(error.response.data['message'])
+                    // There is problem with authentication
+                    // Back to login
+                    if (error.response.status == 401) {
+                        console.log('debug')
+                        // FIXME: router doesn't work here
+                        // router.push({ name: "Login" })
+                        // router.push('/');
+                        context.dispatch('logout')
+                        window.location = '/'
+                    }
                 } else if (error) {
                     alert(error)
                 } else {
@@ -86,6 +97,12 @@ const actions = {
                 if (error.response.data['message']) {
                     // TODO: Use HTML dialog
                     alert(error.response.data['message'])
+                    // There is problem with authentication
+                    // Back to login
+                    if (error.response.status == 401) {
+                        context.dispatch('logout')
+                        window.location = '/'
+                    }
                 } else if (error) {
                     alert(error)
                 } else {
@@ -106,6 +123,12 @@ const actions = {
                 if (error.response.data['message']) {
                     // TODO: Use HTML dialog
                     alert(error.response.data['message'])
+                    // There is problem with authentication
+                    // Back to login
+                    if (error.response.status == 401) {
+                        context.dispatch('logout')
+                        window.location = '/'
+                    }
                 } else if (error) {
                     alert(error)
                 } else {
