@@ -127,9 +127,9 @@ const mutations = {
                 match['group'] = 'Knockout'
             }
 
-            let match_time = match.date + ' ' + match.time + ' ' + (match.timezone ? match.timezone : '')
             // Replace "-" by "/" to avoid issue on Safari
-            let d = new Date(match_time.replace(/-/g, "/"))
+            let match_time = match.date.replace(/-/g, "/") + ' ' + match.time + ' ' + (match.timezone ? match.timezone : '')
+            let d = new Date(match_time)
             match['local_match_time'] = d.toLocaleString()
         }
         state.matches = payload.matches
