@@ -1,41 +1,67 @@
 <template>
     <div class="col-lg-6 match">
-        <span v-if="didMatchEnd && isPredictionCorrect"
-              class="result-icon fa fa-thumbs-o-up" style="color:blue"></span>
-        <span v-if="didMatchEnd && !isPredictionCorrect"
-              class="result-icon fa fa-thumbs-o-down" style="color:red"></span>
-        <div class="match-detail">
-            <div class="group">
-                <small>[{{ this.match.group }}]</small>
-            </div>
-            <div class="match-title">
-                <h4 v-if="!didMatchEnd">{{ this.match.team1.name }} vs {{ this.match.team2.name }}</h4>
-                <h4 v-if="didMatchEnd">{{ this.match.team1.name }} {{ this.match.score1 }} - {{ this.match.score2 }} {{ this.match.team2.name }}</h4>
-            </div>
-            <div class="match-information">
-                <p>{{ this.match.local_match_time }}</p>
-                <p v-if="enoughTimeToPredict">{{ timeToPredict }} to predict</p>
-            </div>
-            <div class="match-result">
-            </div>
-        </div>
+        <div class="col-lg-12 match-container">
 
-        <div class="match-prediction">
-            <button type="button"
-                    class="btn btn-default"
-                    v-bind:class="{ 'btn-success': isTeam1Chosen, 'disabled': !enoughTimeToPredict }"
-                    v-bind:disabled="!enoughTimeToPredict"
-                    v-on:click.stop.prevent="submit(1)">{{ this.match.team1.code }}</button>
-            <button type="button"
-                    class="btn btn-default"
-                    v-bind:class="{ 'btn-success': isDrawChosen, 'disabled': !enoughTimeToPredict }"
-                    v-bind:disabled="!enoughTimeToPredict"
-                    v-on:click.stop.prevent="submit(0)">DRAW</button>
-            <button type="button"
-                    class="btn btn-default"
-                    v-bind:class="{ 'btn-success': isTeam2Chosen, 'disabled': !enoughTimeToPredict }"
-                    v-bind:disabled="!enoughTimeToPredict"
-                    v-on:click.stop.prevent="submit(2)">{{ this.match.team2.code }}</button>
+            <div class="background">
+                <div class="background-under">
+                    <p class="bg-text">{{ this.match.group }}</p>
+                </div>
+            </div>
+
+            <div class="content">
+                <span v-if="didMatchEnd && isPredictionCorrect"
+                      class="result-icon fa fa-thumbs-o-up" style="color:white"></span>
+                <span v-if="didMatchEnd && !isPredictionCorrect"
+                      class="result-icon fa fa-thumbs-o-down" style="color:red"></span>
+
+                <div class="match-detail">
+                    <div class="match-information">
+                        <span>{{ this.match.local_match_time }}</span>
+                    </div>
+                    <div class="match-predict-information">
+                        <span v-if="enoughTimeToPredict">{{ timeToPredict }} to predict!</span>
+                        <span v-else>This match can't be predicted</span>
+                    </div>
+                    <div class="match-title">
+                        <div v-if="!didMatchEnd" class="match-title-one-line">
+                            <div class="match-team-1">{{ this.match.team1.name }}</div>
+                            <div class="match-team-vs">:</div>
+                            <div class="match-team-2">{{ this.match.team2.name }}</div>
+                        </div>
+                        <div v-else>
+                            <div class="match-result-line1">
+                                <div class="match-team-1">{{ this.match.score1 }}</div>
+                                <div class="match-team-vs">:</div>
+                                <div class="match-team-2">{{ this.match.score2 }}</div>
+                            </div>
+                            <div class="match-result-line2">
+                                <div class="match-team-1">{{ this.match.team1.name }}</div>
+                                <div class="match-team-vs"></div>
+                                <div class="match-team-2">{{ this.match.team2.name }}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="match-prediction">
+                    <button type="button"
+                            class="btn btn-default"
+                            v-bind:class="{ 'btn-success': isTeam1Chosen, 'disabled': !enoughTimeToPredict }"
+                            v-bind:disabled="!enoughTimeToPredict"
+                            v-on:click.stop.prevent="submit(1)">{{ this.match.team1.code }}</button>
+                    <button type="button"
+                            class="btn btn-default"
+                            v-bind:class="{ 'btn-success': isDrawChosen, 'disabled': !enoughTimeToPredict }"
+                            v-bind:disabled="!enoughTimeToPredict"
+                            v-on:click.stop.prevent="submit(0)">DRAW</button>
+                    <button type="button"
+                            class="btn btn-default"
+                            v-bind:class="{ 'btn-success': isTeam2Chosen, 'disabled': !enoughTimeToPredict }"
+                            v-bind:disabled="!enoughTimeToPredict"
+                            v-on:click.stop.prevent="submit(2)">{{ this.match.team2.code }}</button>
+                </div>
+            </div>
+
         </div>
     </div>
 </template>
@@ -163,8 +189,128 @@ export default {
 
 <style scoped>
 .match {
-  margin-top: 20px;
+    font-family: "Century Gothic", CenturyGothic, AppleGothic, sans-serif;
+    margin-bottom: 10px;
+    padding: 5px;
 }
+
+.match .match-container {
+    height: 210px;
+    min-height: 210px;
+    padding: 5px;
+}
+
+.match .background, .match .background .background-under {
+    position: absolute;
+    display: block;
+    min-height: 100%; 
+    min-width: 100%;
+    border-radius: 15px;
+    left: 0;
+}
+
+.match .background {
+    z-index: -1;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    border-style: solid;
+    border-width: 1px;
+    border-color: #707070;
+    background: linear-gradient(-235deg, #004EA1, #863CBA, #B923A3);
+}
+
+.match .background .background-under {
+    z-index: -2;
+    opacity: 0.5;
+    background: black;
+    top: 0;
+}
+
+.match .background .background-under .bg-text {
+    color: lightgray;
+    font-size: 28px;
+    opacity: 0.3;
+    text-transform: uppercase;
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    margin-right: 7px;
+    margin-bottom: 7px;
+    line-height: 80%;
+}
+
+.match .content {
+    color: #FFFFFF;
+    text-align: center;
+    padding: 5px;
+}
+
+.match .content .match-title {
+    font-size: 18px;
+    font-weight: bold;
+}
+.match .content .match-information {
+    margin-top: 30px;
+    font-size: 12px;
+    text-transform: uppercase;
+    font-weight: bold;
+}
+
+.match .content .match-predict-information {
+    font-size: 10px;
+    margin-top: 5px;
+}
+
+.match-title .match-title-one-line .match-team-1,
+.match-title .match-title-one-line .match-team-vs,
+.match-title .match-title-one-line .match-team-2 {
+    float: left;
+    margin-top: 18px;
+    margin-bottom: 18px;
+}
+
+.match-team-1, .match-team-2 {
+    width: 45%;
+    text-transform: uppercase;
+}
+
+.match-team-1 {
+    text-align: right;
+}
+
+.match-team-vs {
+    width: 10%;
+    text-align: center;
+}
+
+.match-team-2 {
+    text-align: left;
+}
+
+.match-result-line1 {
+    font-size: 22px;
+}
+
+.match-result-line2 {
+    font-size: 8px;
+}
+
+.match-result-line1 .match-team-1,
+.match-result-line1 .match-team-vs,
+.match-result-line1 .match-team-2 {
+    float: left;
+    margin-top: 10px;
+    margin-bottom: 0;
+}
+
+.match-result-line2 .match-team-1,
+.match-result-line2 .match-team-vs,
+.match-result-line2 .match-team-2 {
+    float: left;
+    margin-top: 0;
+    margin-bottom: 10px;
+}
+
 .result-icon {
     float: right;
     font-size: 24px;
