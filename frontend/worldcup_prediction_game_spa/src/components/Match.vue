@@ -247,7 +247,7 @@ export default {
 
 .match .content .match-title {
     font-family: "Century Gothic", CenturyGothic, AppleGothic, sans-serif;
-    font-size: 20px;
+    font-size: 18px;
 }
 .match .content .match-information {
     margin-top: 30px;
@@ -266,8 +266,8 @@ export default {
 .match-title .match-title-one-line .match-team-vs,
 .match-title .match-title-one-line .match-team-2 {
     float: left;
-    margin-top: 17px;
-    margin-bottom: 17px;
+    margin-top: 18px;
+    margin-bottom: 18px;
 }
 
 .match-team-1, .match-team-2 {
