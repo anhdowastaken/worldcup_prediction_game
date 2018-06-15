@@ -190,8 +190,8 @@ export default {
 <style scoped>
 .match {
     font-family: "Century Gothic", CenturyGothic, AppleGothic, sans-serif;
-    margin-bottom: 20px;
-    padding: 0px;
+    margin-bottom: 10px;
+    padding: 5px;
 }
 
 .match .match-container {
