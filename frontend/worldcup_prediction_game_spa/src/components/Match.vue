@@ -189,8 +189,9 @@ export default {
 
 <style scoped>
 .match {
+    font-family: "Century Gothic", CenturyGothic, AppleGothic, sans-serif;
     margin-bottom: 20px;
-    padding: 5px;
+    padding: 0px;
 }
 
 .match .match-container {
@@ -236,7 +237,6 @@ export default {
     margin-right: 7px;
     margin-bottom: 7px;
     line-height: 80%;
-    font-family: "Century Gothic", CenturyGothic, AppleGothic, sans-serif;
 }
 
 .match .content {
@@ -246,19 +246,17 @@ export default {
 }
 
 .match .content .match-title {
-    font-family: "Century Gothic", CenturyGothic, AppleGothic, sans-serif;
     font-size: 18px;
     font-weight: bold;
 }
 .match .content .match-information {
     margin-top: 30px;
-    font-family: "Century Gothic", CenturyGothic, AppleGothic, sans-serif;
     font-size: 12px;
     text-transform: uppercase;
+    font-weight: bold;
 }
 
 .match .content .match-predict-information {
-    font-family: "Century Gothic", CenturyGothic, AppleGothic, sans-serif;
     font-size: 10px;
     margin-top: 5px;
 }

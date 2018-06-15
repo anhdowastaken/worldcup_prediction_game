@@ -60,7 +60,17 @@ export default {
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
 .header-background {
-    background: linear-gradient(to right, #004EA1, #863CBA, #B923A3);
+    background: linear-gradient(to right,
+                              rgba(0, 78, 161, 1),
+                              rgba(134, 60, 186, 1),
+                              rgba(185, 35, 163, 1));
+    /* background: linear-gradient(to right,
+                              rgba(0, 78, 161, 1),
+                              rgba(134, 60, 186, 1),
+                              rgba(185, 35, 163, 1)),
+                url('../assets/header_background_image.png'); */
+    /* background-image: url('../assets/header_background_image.png'); */
+    /* background-size: contain; */
     height: 350px;
     min-height: 350px;
     position: absolute;
@@ -79,10 +89,9 @@ export default {
     width: 100%;
 }
 
-.header,
-.matches {
-  padding-right: 10px;
-  padding-left: 10px;
+.header, .matches {
+    padding-right: 5px;
+    padding-left: 5px;
 }
 
 /* Custom page header */
@@ -93,40 +102,31 @@ export default {
     height: 350px;
     min-height: 350px;
 }
-/* Make the masthead heading the same height as the navigation */
-.header h3 {
-  margin-top: 0;
-  margin-bottom: 0;
-  line-height: 40px;
-}
 
 /* Customize container */
 @media (min-width: 768px) {
-  .container {
-    max-width: 730px;
-    margin-top: 20px;
-  }
+    .container {
+        max-width: 730px;
+        margin-top: 20px;
+    }
 }
-/* .container-narrow > hr {
-  margin: 20px 0;
-} */
 
 /* Supporting matches content */
 .matches {
-  margin: 20px 0;
+    margin: 10px 0;
 }
 
 /* Responsive: Portrait tablets and up */
 @media screen and (min-width: 768px) {
-  /* Remove the padding we set earlier */
-  .header,
-  .matches {
-    padding-right: 0;
-    padding-left: 0;
-  }
-  /* Space out the masthead */
-  .header {
-    margin-bottom: 10px;
-  }
+    /* Remove the padding we set earlier */
+    .header,
+    .matches {
+        padding-right: 0;
+        padding-left: 0;
+    }
+    /* Space out the masthead */
+    .header {
+        margin-bottom: 10px;
+    }
 }
 </style>
