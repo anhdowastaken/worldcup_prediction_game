@@ -1,6 +1,6 @@
 <template>
     <div id="form-logout">
-        <button type="button" class="btn btn-default btn-block" v-on:click="logout()">Logout</button>
+        <button type="button" class="btn btn-default btn-block" v-on:click.stop.prevent="logout()">Logout</button>
     </div>
 </template>
 

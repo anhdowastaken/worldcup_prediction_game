@@ -17,6 +17,7 @@
 
 <script>
 import { mapState } from 'vuex' 
+import { key_jwt, key_user_data } from '@/common'
 import Logout from '@/components/Logout'
 import AccountInfo from '@/components/AccountInfo'
 import Match from '@/components/Match'
@@ -39,7 +40,7 @@ export default {
             if (state.jwt) {
                 return state.jwt 
             } else {
-                return localStorage.jwt
+                return sessionStorage.getItem(key_jwt)
             }
         }
     }),

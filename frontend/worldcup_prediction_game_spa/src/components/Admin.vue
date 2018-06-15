@@ -16,7 +16,7 @@
             <h3>Register</h3>
             <div class="form-group">
                 <input type="text" class="form-control" name="username" v-model="username_to_register" placeholder="Username" />
-                <button type="button" class="btn btn-default" v-on:click="register()">Register</button>
+                <button type="button" class="btn btn-default" v-on:click.stop.prevent="register()">Register</button>
             </div>
         </form>
 
@@ -24,7 +24,7 @@
             <h3>Reset password</h3>
             <div class="form-group">
                 <input type="text" class="form-control" name="username" v-model="username_to_reset_password" placeholder="Username" />
-                <button type="button" class="btn btn-default" v-on:click="resetPassword()">Reset</button>
+                <button type="button" class="btn btn-default" v-on:click.stop.prevent="resetPassword()">Reset</button>
             </div>
         </form>
     </div>
@@ -33,6 +33,7 @@
 <script>
 import { mapState } from 'vuex' 
 import { isEmpty } from '@/utils'
+import { key_jwt, key_user_data } from '@/common'
 import Logout from '@/components/Logout'
 
 export default {
@@ -51,14 +52,14 @@ export default {
             if (!isEmpty(state.userData)) {
                 return state.userData
             } else {
-                return JSON.parse(localStorage.getItem('user_data'))
+                return JSON.parse(sessionStorage.getItem(key_user_data))
             }
         },
         jwt: function(state) {
             if (state.jwt) {
                 return state.jwt 
             } else {
-                return localStorage.jwt
+                return sessionStorage.getItem(key_jwt)
             }
         }
     }),
