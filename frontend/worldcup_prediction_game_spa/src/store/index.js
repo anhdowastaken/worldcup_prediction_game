@@ -159,6 +159,12 @@ const mutations = {
             let d = new Date(match_time)
             match['local_match_time'] = d.toLocaleString()
         }
+        // Sort matches by match time
+        payload.matches.sort(function(a, b){
+            // Turn your strings into dates, and then subtract them
+            // to get a value that is either negative, positive, or zero.
+            return new Date(a['local_match_time']) - new Date(b['local_match_time']);
+        });
         state.matches = payload.matches
     },
     setUserData(state, payload) {
