@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div v-if="userData">
         <h3 class="text-muted">{{ this.userData['username'] }}</h3>
         <p>Last login: {{ this.userData['last_login_at'] }}</p>
         <p><span v-show="point > 0">-</span>{{ this.point }} point<span v-show="point > 0">s</span></p>
@@ -9,6 +9,7 @@
 <script>
 import { mapState } from 'vuex' 
 import { isEmpty } from '@/utils'
+import { key_jwt, key_user_data } from '@/common'
 
 export default {
     name: 'AccountInfo',
@@ -23,7 +24,12 @@ export default {
             if (!isEmpty(state.userData)) {
                 return state.userData
             } else {
-                return JSON.parse(sessionStorage.getItem('user_data'))
+                let ret = sessionStorage.getItem(key_user_data)
+                if (ret) {
+                    return JSON.parse(sessionStorage.getItem(key_user_data))
+                } else {
+                    return null
+                }
             }
         },
         point: function() {

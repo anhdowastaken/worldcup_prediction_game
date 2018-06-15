@@ -2,6 +2,9 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 
 import router from '@/router'
+
+import { key_jwt, key_user_data } from '@/common'
+
 // imports of AJAX functions go here
 import { fetchMatchesWithPredictions } from '@/api'
 import { submitLogin } from '@/api'
@@ -76,8 +79,8 @@ const actions = {
         return submitLogout()
             .then(() => {
                 context.commit('setMatches', { matches: [] })
-                context.commit('setJwtToken', { jwt: '' })
-                context.commit('setUserData', { userData: {} })
+                context.commit('removeJwtToken')
+                context.commit('removeUserData')
             })
             .catch(error => {
                 alert(error)
@@ -167,13 +170,21 @@ const mutations = {
             d = new Date(payload.userData['last_login_at'] * 1000 - d.getTimezoneOffset() * 60 * 1000)
             payload.userData['last_login_at'] = d.toLocaleString()
         }
-        sessionStorage.setItem('user_data', JSON.stringify(payload.userData))
+        sessionStorage.setItem(key_user_data, JSON.stringify(payload.userData))
         state.userData = payload.userData
     },
     setJwtToken(state, payload) {
         console.log('setJwtToken payload = ', payload)
-        sessionStorage.setItem('jwt', payload.jwt)
+        sessionStorage.setItem(key_jwt, payload.jwt)
         state.jwt = payload.jwt
+    },
+    removeUserData(state) {
+        sessionStorage.removeItem(key_user_data)
+        state.userData = {}
+    },
+    removeJwtToken(state, payload) {
+        sessionStorage.removeItem(key_jwt)
+        state.jwt = ''
     }
 }
 
@@ -185,7 +196,7 @@ const getters = {
         if (state.jwt) {
             return isValidJwt(state.jwt)
         } else {
-            return isValidJwt(sessionStorage.getItem('jwt'))
+            return isValidJwt(sessionStorage.getItem(key_jwt))
         }
     }
 }
