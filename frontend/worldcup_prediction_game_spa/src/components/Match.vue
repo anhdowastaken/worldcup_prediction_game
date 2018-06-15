@@ -25,17 +25,17 @@
                     class="btn btn-default"
                     v-bind:class="{ 'btn-success': isTeam1Chosen, 'disabled': !enoughTimeToPredict }"
                     v-bind:disabled="!enoughTimeToPredict"
-                    v-on:click.prevent="submit(1)">{{ this.match.team1.code }}</button>
+                    v-on:click.stop.prevent="submit(1)">{{ this.match.team1.code }}</button>
             <button type="button"
                     class="btn btn-default"
                     v-bind:class="{ 'btn-success': isDrawChosen, 'disabled': !enoughTimeToPredict }"
                     v-bind:disabled="!enoughTimeToPredict"
-                    v-on:click.prevent="submit(0)">DRAW</button>
+                    v-on:click.stop.prevent="submit(0)">DRAW</button>
             <button type="button"
                     class="btn btn-default"
                     v-bind:class="{ 'btn-success': isTeam2Chosen, 'disabled': !enoughTimeToPredict }"
                     v-bind:disabled="!enoughTimeToPredict"
-                    v-on:click.prevent="submit(2)">{{ this.match.team2.code }}</button>
+                    v-on:click.stop.prevent="submit(2)">{{ this.match.team2.code }}</button>
         </div>
     </div>
 </template>

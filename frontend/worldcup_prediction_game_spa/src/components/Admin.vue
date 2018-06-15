@@ -16,7 +16,7 @@
             <h3>Register</h3>
             <div class="form-group">
                 <input type="text" class="form-control" name="username" v-model="username_to_register" placeholder="Username" />
-                <button type="button" class="btn btn-default" v-on:click="register()">Register</button>
+                <button type="button" class="btn btn-default" v-on:click.stop.prevent="register()">Register</button>
             </div>
         </form>
 
@@ -24,7 +24,7 @@
             <h3>Reset password</h3>
             <div class="form-group">
                 <input type="text" class="form-control" name="username" v-model="username_to_reset_password" placeholder="Username" />
-                <button type="button" class="btn btn-default" v-on:click="resetPassword()">Reset</button>
+                <button type="button" class="btn btn-default" v-on:click.stop.prevent="resetPassword()">Reset</button>
             </div>
         </form>
     </div>
