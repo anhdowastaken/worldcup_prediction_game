@@ -33,6 +33,7 @@
 <script>
 import { mapState } from 'vuex' 
 import { isEmpty } from '@/utils'
+import { key_jwt, key_user_data } from '@/common'
 import Logout from '@/components/Logout'
 
 export default {
@@ -51,14 +52,14 @@ export default {
             if (!isEmpty(state.userData)) {
                 return state.userData
             } else {
-                return JSON.parse(sessionStorage.getItem('user_data'))
+                return JSON.parse(sessionStorage.getItem(key_user_data))
             }
         },
         jwt: function(state) {
             if (state.jwt) {
                 return state.jwt 
             } else {
-                return sessionStorage.getItem('jwt')
+                return sessionStorage.getItem(key_jwt)
             }
         }
     }),
