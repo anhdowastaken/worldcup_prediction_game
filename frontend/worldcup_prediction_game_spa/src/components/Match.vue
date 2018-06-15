@@ -25,7 +25,7 @@
                     <div class="match-title">
                         <div v-if="!didMatchEnd" class="match-title-one-line">
                             <div class="match-team-1">{{ this.match.team1.name }}</div>
-                            <div class="match-team-vs">-</div>
+                            <div class="match-team-vs">:</div>
                             <div class="match-team-2">{{ this.match.team2.name }}</div>
                         </div>
                         <div v-else>
@@ -248,6 +248,7 @@ export default {
 .match .content .match-title {
     font-family: "Century Gothic", CenturyGothic, AppleGothic, sans-serif;
     font-size: 18px;
+    font-weight: bold;
 }
 .match .content .match-information {
     margin-top: 30px;

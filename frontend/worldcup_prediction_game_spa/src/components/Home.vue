@@ -1,17 +1,24 @@
 <template>
-    <div class="container">
-        <div class="header clearfix">
-            <nav>
-                <ul class="nav nav-pills pull-right">
-                    <li role="presentation"><logout></logout></li>
-                </ul>
-            </nav>
-            <account-info></account-info>
+    <div>
+        <div class="header-background">
+            <div class="header-background-under"></div>
         </div>
 
-        <div class="row matches">
-            <match v-for="match in matches" v-bind:match="match" :key="match.num"></match>
+        <div class="container">
+            <div class="header">
+                <nav>
+                    <ul class="nav nav-pills pull-right">
+                        <li><logout></logout></li>
+                    </ul>
+                </nav>
+                <account-info></account-info>
+            </div>
+
+            <div class="row matches">
+                <match v-for="match in matches" v-bind:match="match" :key="match.num"></match>
+            </div>
         </div>
+
     </div>
 </template>
 
@@ -52,6 +59,26 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
+.header-background {
+    background: linear-gradient(to right, #004EA1, #863CBA, #B923A3);
+    height: 350px;
+    min-height: 350px;
+    position: absolute;
+    z-index: -99;
+    width: 100%;
+}
+
+.header-background-under {
+    z-index: -100;
+    opacity: 0.5;
+    background: black;
+    top: 0;
+    height: 350px;
+    min-height: 350px;
+    position: absolute;
+    width: 100%;
+}
+
 .header,
 .matches {
   padding-right: 10px;
@@ -60,9 +87,11 @@ export default {
 
 /* Custom page header */
 .header {
-  padding-top: 10px;
-  padding-bottom: 10px;
-  border-bottom: 1px solid #e5e5e5;
+    position: relative;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    height: 350px;
+    min-height: 350px;
 }
 /* Make the masthead heading the same height as the navigation */
 .header h3 {
@@ -78,9 +107,9 @@ export default {
     margin-top: 20px;
   }
 }
-.container-narrow > hr {
+/* .container-narrow > hr {
   margin: 20px 0;
-}
+} */
 
 /* Supporting matches content */
 .matches {
