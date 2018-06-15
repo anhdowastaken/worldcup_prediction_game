@@ -3,7 +3,9 @@
         <div class="col-lg-12 match-container">
 
             <div class="background">
-                <p class="bg-text">{{ this.match.group }}</p>
+                <div class="background-under">
+                    <p class="bg-text">{{ this.match.group }}</p>
+                </div>
             </div>
 
             <div class="content">
@@ -175,31 +177,42 @@ export default {
 <style scoped>
 .match {
     margin-bottom: 20px;
+    padding: 5px;
 }
 
 .match .match-container {
     height: 210px;
     min-height: 210px;
+    padding: 5px;
 }
 
-.match .background {
+.match .background, .match .background .background-under {
     position: absolute;
-    z-index: -999999;
     display: block;
     min-height: 100%; 
     min-width: 100%;
-    background: linear-gradient(to right, #B923A3, #863CBA, #024EA1, #004EA1);
+    border-radius: 15px;
+    left: 0;
+}
+
+.match .background {
+    z-index: -1;
     padding-top: 10px;
     padding-bottom: 10px;
     border-style: solid;
     border-width: 1px;
     border-color: #707070;
-    border-radius: 15px;
-    /* opacity: 0.9; */
-    left: 0;
+    background: linear-gradient(-235deg, #004EA1, #863CBA, #B923A3);
 }
 
-.match .background .bg-text {
+.match .background .background-under {
+    z-index: -2;
+    opacity: 0.5;
+    background: black;
+    top: 0;
+}
+
+.match .background .background-under .bg-text {
     color: lightgray;
     font-size: 34px;
     opacity: 0.3;
@@ -216,7 +229,7 @@ export default {
 .match .content {
     color: #FFFFFF;
     text-align: center;
-    padding: 10px;
+    padding: 5px;
 }
 
 .match .content .match-title {

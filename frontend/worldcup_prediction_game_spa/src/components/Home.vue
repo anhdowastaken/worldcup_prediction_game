@@ -54,12 +54,13 @@ export default {
 <style scoped>
 .header,
 .matches {
-  padding-right: 15px;
-  padding-left: 15px;
+  padding-right: 10px;
+  padding-left: 10px;
 }
 
 /* Custom page header */
 .header {
+  padding-top: 10px;
   padding-bottom: 10px;
   border-bottom: 1px solid #e5e5e5;
 }
