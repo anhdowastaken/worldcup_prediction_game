@@ -23,7 +23,7 @@ export default {
             if (!isEmpty(state.userData)) {
                 return state.userData
             } else {
-                return JSON.parse(localStorage.getItem('user_data'))
+                return JSON.parse(sessionStorage.getItem('user_data'))
             }
         },
         point: function() {

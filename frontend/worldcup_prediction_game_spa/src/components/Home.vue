@@ -39,7 +39,7 @@ export default {
             if (state.jwt) {
                 return state.jwt 
             } else {
-                return localStorage.jwt
+                return sessionStorage.getItem('jwt')
             }
         }
     }),

@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 
-// import router from '@/router'
+import router from '@/router'
 // imports of AJAX functions go here
 import { fetchMatchesWithPredictions } from '@/api'
 import { submitLogin } from '@/api'
@@ -41,11 +41,9 @@ const actions = {
                     // Back to login
                     if (error.response.status == 401) {
                         console.log('debug')
-                        // FIXME: router doesn't work here
-                        // router.push({ name: "Login" })
-                        // router.push('/');
-                        context.dispatch('logout')
-                        window.location = '/'
+                        context.dispatch('logout').then(() => {
+                            router.push({ name: "Login" })
+                        })
                     }
                 } else if (error) {
                     alert(error)
@@ -60,6 +58,7 @@ const actions = {
                 if (response.status === 200) {
                     context.commit('setJwtToken', { jwt: response.data['token'] })
                     context.commit('setUserData', { userData: response.data['user_data'] })
+                    router.push({ name: "Home" })
                 }
             })
             .catch(error => {
@@ -75,7 +74,7 @@ const actions = {
     },
     logout(context) {
         return submitLogout()
-            .then(response => {
+            .then(() => {
                 context.commit('setMatches', { matches: [] })
                 context.commit('setJwtToken', { jwt: '' })
                 context.commit('setUserData', { userData: {} })
@@ -100,8 +99,9 @@ const actions = {
                     // There is problem with authentication
                     // Back to login
                     if (error.response.status == 401) {
-                        context.dispatch('logout')
-                        window.location = '/'
+                        context.dispatch('logout').then(() => {
+                            router.push({ name: "Login" })
+                        })
                     }
                 } else if (error) {
                     alert(error)
@@ -126,8 +126,9 @@ const actions = {
                     // There is problem with authentication
                     // Back to login
                     if (error.response.status == 401) {
-                        context.dispatch('logout')
-                        window.location = '/'
+                        context.dispatch('logout').then(() => {
+                            router.push({ name: "Login" })
+                        })
                     }
                 } else if (error) {
                     alert(error)
@@ -166,12 +167,12 @@ const mutations = {
             d = new Date(payload.userData['last_login_at'] * 1000 - d.getTimezoneOffset() * 60 * 1000)
             payload.userData['last_login_at'] = d.toLocaleString()
         }
-        localStorage.setItem('user_data', JSON.stringify(payload.userData))
+        sessionStorage.setItem('user_data', JSON.stringify(payload.userData))
         state.userData = payload.userData
     },
     setJwtToken(state, payload) {
         console.log('setJwtToken payload = ', payload)
-        localStorage.setItem('jwt', payload.jwt)
+        sessionStorage.setItem('jwt', payload.jwt)
         state.jwt = payload.jwt
     }
 }
@@ -184,7 +185,7 @@ const getters = {
         if (state.jwt) {
             return isValidJwt(state.jwt)
         } else {
-            return isValidJwt(localStorage.getItem('jwt'))
+            return isValidJwt(sessionStorage.getItem('jwt'))
         }
     }
 }

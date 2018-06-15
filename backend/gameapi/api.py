@@ -47,14 +47,20 @@ def token_required(f):
             data = jwt.decode(token, BaseConfig().SECRET_KEY)
             user = User.query.filter_by(id=data['sub']).first()
             if not user:
-                raise RuntimeError('User not found')
+                return jsonify(dict(message="Can't recognize user stored in token",
+                                    authenticated=False)), 401
             return f(user, *args, **kwargs)
         except jwt.ExpiredSignatureError:
             return jsonify(expired_msg), 401 # 401 is Unauthorized HTTP status code
-        except (jwt.InvalidTokenError, Exception) as e:
+        except (jwt.InvalidTokenError) as e:
             # TODO: Use logger
             print(e)
             return jsonify(invalid_msg), 401
+        except (Exception) as e:
+            # TODO: Use logger
+            print(e)
+            return jsonify(dict(message="Backend error",
+                                authenticated=False)), 401
 
     return _verify
 

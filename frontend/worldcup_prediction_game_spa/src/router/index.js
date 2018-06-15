@@ -15,11 +15,11 @@ const router = new Router({
             beforeEnter(to, from, next) {
                 // FIXME: Why does line below not work (always return True after reload)?
                 // if (!store.getters.isAuthenticated) {
-                if (localStorage.getItem('jwt') == '') {
+                if (sessionStorage.getItem('jwt') == '') {
                     next()
-                } else if (localStorage.getItem('user_data') &&
-                           JSON.parse(localStorage.getItem('user_data'))['role'] &&
-                           JSON.parse(localStorage.getItem('user_data'))['role'] == 'admin') {
+                } else if (sessionStorage.getItem('user_data') &&
+                           JSON.parse(sessionStorage.getItem('user_data'))['role'] &&
+                           JSON.parse(sessionStorage.getItem('user_data'))['role'] == 'admin') {
                     next('/admin')
                 } else {
                     next('/home')
@@ -31,11 +31,11 @@ const router = new Router({
             name: 'Home',
             component: Home,
             beforeEnter(to, from, next) {
-                if (localStorage.getItem('jwt') == '') {
+                if (sessionStorage.getItem('jwt') == '') {
                     next('/')
-                } else if (localStorage.getItem('user_data') &&
-                           JSON.parse(localStorage.getItem('user_data'))['role'] &&
-                           JSON.parse(localStorage.getItem('user_data'))['role'] == 'admin') {
+                } else if (sessionStorage.getItem('user_data') &&
+                           JSON.parse(sessionStorage.getItem('user_data'))['role'] &&
+                           JSON.parse(sessionStorage.getItem('user_data'))['role'] == 'admin') {
                     next('/admin')
                 } else {
                     next()
@@ -47,11 +47,11 @@ const router = new Router({
             name: 'Admin',
             component: Admin,
             beforeEnter(to, from, next) {
-                if (localStorage.getItem('jwt') == '') {
+                if (sessionStorage.getItem('jwt') == '') {
                     next('/')
-                } else if (localStorage.getItem('user_data') &&
-                           JSON.parse(localStorage.getItem('user_data'))['role'] &&
-                           JSON.parse(localStorage.getItem('user_data'))['role'] == 'admin') {
+                } else if (sessionStorage.getItem('user_data') &&
+                           JSON.parse(sessionStorage.getItem('user_data'))['role'] &&
+                           JSON.parse(sessionStorage.getItem('user_data'))['role'] == 'admin') {
                     next()
                 } else {
                     next('/home')
