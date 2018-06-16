@@ -1,6 +1,15 @@
 <template>
     <div class="col-lg-6 match">
-        <div class="col-lg-12 match-container">
+
+        <!-- FIXME: Positions of result-icon in two behaviors are not consistent -->
+        <match-small v-if="hasMatchResult"
+                     v-show="!expand"
+                     v-bind:match="match"
+                     v-on:click.native="toggleExpand()"></match-small>
+
+        <div v-show="expand"
+             v-on:click="toggleExpand()"
+             class="col-lg-12 match-container">
 
             <div class="background">
                 <div class="background-under">
@@ -10,9 +19,9 @@
 
             <div class="content">
                 <span v-if="didMatchEnd && isPredictionCorrect"
-                      class="result-icon fa fa-thumbs-o-up" style="color:white"></span>
+                      class="result-icon fa fa-thumbs-o-up"></span>
                 <span v-if="didMatchEnd && !isPredictionCorrect"
-                      class="result-icon fa fa-thumbs-o-down" style="color:red"></span>
+                      class="result-icon fa fa-thumbs-o-down"></span>
 
                 <div class="match-detail">
                     <div class="match-information">
@@ -71,15 +80,20 @@ import { mapState } from 'vuex'
 import { submitPrediction } from '@/api'
 import { msToTime } from '@/utils'
 import { key_jwt, key_user_data } from '@/common'
+import MatchSmall from '@/components/MatchSmall'
 
 export default {
     name: 'Match',
+    components: {
+        MatchSmall
+    },
     props: {
         match: Object
     },
     data() {
         return {
-            currentPrediction: this.match.prediction
+            currentPrediction: this.match.prediction,
+            expand: true // Default value
         }
     },
     computed: mapState({
@@ -136,6 +150,13 @@ export default {
                 return true
             }
         },
+        hasMatchResult: function() {
+            if (this.match.score1 != null && this.match.score1 != undefined && this.match.score2 != null && this.match.score2 != undefined) {
+                return true
+            } else {
+                return false
+            }
+        },
         isPredictionCorrect: function() {
             let match = this.match
             let prediction = match['prediction']
@@ -162,6 +183,15 @@ export default {
             }
         }
     }),
+    created: function() {
+        // After component is created completely, decide how to display
+        if (window.innerWidth > 768) { // FIXME: Small screen size is hard-code here
+            // Always expand with big screen size
+            this.expand = true
+        } else {
+            this.expand = !this.hasMatchResult
+        }
+    },
     methods: {
         submit: function(prediction) {
             if (prediction != this.currentPrediction) {
@@ -181,6 +211,15 @@ export default {
                             alert('Error')
                         }
                     })
+            }
+        },
+        toggleExpand: function() {
+            if (window.innerWidth > 768 || !this.hasMatchResult) { // FIXME: Small screen size is hard-code here
+                // Always expand with big screen size
+                // and do not collapse if the match doesn't have result
+                this.expand = true
+            } else {
+                this.expand = !this.expand
             }
         }
     }
@@ -314,5 +353,7 @@ export default {
 .result-icon {
     float: right;
     font-size: 24px;
+    color: white;
+    margin-top: 2px;
 }
 </style>

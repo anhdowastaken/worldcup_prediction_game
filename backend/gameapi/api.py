@@ -156,7 +156,7 @@ def login():
         token = jwt.encode({
             'sub': registered_user.id,
             'iat': datetime.utcnow(),
-            'exp': datetime.utcnow() + timedelta(minutes=30)}, BaseConfig().SECRET_KEY)
+            'exp': datetime.utcnow() + timedelta(hours=24)}, BaseConfig().SECRET_KEY)
 
         return jsonify(dict(message='Logged in successfully',
                             authenticated=True,
