@@ -156,7 +156,7 @@ def login():
         token = jwt.encode({
             'sub': registered_user.id,
             'iat': datetime.utcnow(),
-            'exp': datetime.utcnow() + timedelta(minutes=30)}, BaseConfig().SECRET_KEY)
+            'exp': datetime.utcnow() + timedelta(hours=24)}, BaseConfig().SECRET_KEY)
 
         return jsonify(dict(message='Logged in successfully',
                             authenticated=True,
@@ -194,6 +194,36 @@ def get_matches():
 
     return response
 
+@api.route('/change_password', methods=['POST'])
+@token_required
+@login_required
+def change_password(jwt_user):
+    if jwt_user.id != current_user.id:
+        return jsonify(dict(message='Re-authentication required')), 401
+
+    data = request.get_json()
+    old_password = data['old_password']
+    new_password = data['new_password']
+
+    registered_user = User.query.filter_by(id=jwt_user.id).first()
+    if registered_user is None or bcrypt.check_password_hash(registered_user.password, old_password) == False:
+        return jsonify(dict(message='Old password is incorrect', changed=False)), 200
+
+    if new_password == '':
+        return jsonify(dict(message='New password can\'t be empty', changed=False)), 200
+
+    password_hash = bcrypt.generate_password_hash(new_password).decode('utf-8')
+    registered_user.password = password_hash
+    try:
+        db.session.commit()
+
+        return jsonify(dict(message='Password is changed successfully',
+                            changed=True)), 201
+    except (SQLAlchemyError) as e:
+        # TODO: Use logger
+        print(e)
+        return jsonify(dict(message='Changed failed', registered=False)), 500
+
 @api.route('/get_matches_with_prediction', methods=['GET'])
 @token_required
 @login_required
@@ -211,6 +241,18 @@ def get_matches_with_predictions(jwt_user):
                 matches = matches + aRound['matches']
 
     if len(matches) > 0:
+        for m in matches:
+            match_time_str = m['date'] + ' ' + m['time'] + ' ' + (m['timezone'] if m['timezone'] else '')
+            match_time = parser.parse(match_time_str)
+            match_time = match_time.replace(tzinfo=pytz.utc) + match_time.utcoffset()
+            m['match_time_utc_seconds'] = int(match_time.timestamp())
+            
+
+        # Sort matches by match time
+        matches = sorted(matches,
+                         key=lambda m: m['match_time_utc_seconds'], reverse=False
+                        )
+
         predictions = Prediction.query.filter(Prediction.user_id == jwt_user.id).all()
         for p in predictions:
             for m in matches:

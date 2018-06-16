@@ -8,16 +8,14 @@
             <div class="header">
                 <nav>
                     <ul class="nav nav-pills pull-left">
-                        <li><span class="fa fa-user"
-                                  style="font-size: 24px;
-                                         color: white;
-                                         margin-top: 5px;
-                                         padding-right: 10px;
-                                         padding-top: 2px;
-                                         padding-bottom: 2px;"
-                                  v-on:click.stop.prevent="routeToUserCP()"></span></li>
+                        <li><span class="fa fa-chevron-left"
+                                  style="font-size:24px;
+                                         color:white;
+                                         padding-top:2px;
+                                         margin-top:2px;"
+                                  v-on:click.stop.prevent="back"></span></li>
                     </ul>
-
+ 
                     <ul class="nav nav-pills pull-right">
                         <li><logout></logout></li>
                     </ul>
@@ -25,22 +23,15 @@
                 <account-info></account-info>
             </div>
 
-            <form class="form-register">
-                <h2 class="form-register-heading">Register New User</h2>
-                <label for="inputUsernameToRegister" class="sr-only">Username</label>
-                <input type="text" id="inputUsernameToRegister" class="form-control" placeholder="username" required v-model="username_to_register">
+            <form class="form-change-password">
+                <h2 class="form-change-password-heading"></h2>
+                <label for="inputOldPassword" class="sr-only">Old Password</label>
+                <input type="password" id="inputOldPassword" class="form-control" placeholder="old password" required autofocus v-model="old_password">
+                <label for="inputNewPassword" class="sr-only">New Password</label>
+                <input type="password" id="inputNewPassword" class="form-control" placeholder="new password" required v-model="new_password">
                 <button class="btn btn-lg btn-primary btn-block"
                         v-on:submit.stop.prevent="doNothing()"
-                        v-on:click.stop.prevent="register()">Register</button>
-            </form>
-
-            <form class="form-reset-password">
-                <h2 class="form-reset-password-heading">Reset Password</h2>
-                <label for="inputUsernameToResetPassword" class="sr-only">Username</label>
-                <input type="text" id="inputUsernameToResetPassword" class="form-control" placeholder="username" required v-model="username_to_reset_password">
-                <button class="btn btn-lg btn-primary btn-block"
-                        v-on:submit.stop.prevent="doNothing()"
-                        v-on:click.stop.prevent="resetPassword()">Reset</button>
+                        v-on:click.stop.prevent="changePassword()">Change</button>
             </form>
         </div>
     </div>
@@ -54,15 +45,15 @@ import AccountInfo from '@/components/AccountInfo'
 import Logout from '@/components/Logout'
 
 export default {
-    name: 'Admin',
+    name: 'UserCP',
     components: {
         AccountInfo,
         Logout
     },
     data() {
         return {
-            username_to_register: "",
-            username_to_reset_password: ""
+            old_password: "",
+            new_password: ""
         }
     },
     computed: mapState({
@@ -82,16 +73,22 @@ export default {
         }
     }),
     methods: {
-        register: function() {
-            this.$store.dispatch('register', { jwt: this.jwt, username: this.username_to_register })
-            this.username_to_register = ""
+        changePassword: function() {
+            this.$store.dispatch('changePassword', { jwt: this.jwt,
+                                                     old_password: this.old_password,
+                                                     new_password: this.new_password })
+            this.old_password = ""
+            this.new_password = ""
         },
-        resetPassword: function() {
-            this.$store.dispatch('resetPassword', { jwt: this.jwt, username: this.username_to_reset_password})
-            this.username_to_reset_password = ""
+        doNothing: function() {
+
         },
-        routeToUserCP: function() {
-            this.$router.push({ name: 'UserCP' })
+        back: function() {
+            if (window.history.length > 1) {
+                this.$router.go(-1)
+            } else {
+                this.$router.push('/')
+            }
         }
     }
 }
@@ -169,19 +166,16 @@ export default {
     }
 }
 
-.form-register,
-.form-reset-password {
+.form-change-password {
     max-width: 330px;
     padding: 15px;
     margin: 0 auto;
     font-family: "Century Gothic", CenturyGothic, AppleGothic, sans-serif;
 }
-.form-register .form-register-heading,
-.form-reset-password .form-reset-password-heading {
+.form-change-password .form-change-password-heading {
     margin-bottom: 10px;
 }
-.form-register .form-control,
-.form-reset-password .form-control {
+.form-change-password .form-control {
     position: relative;
     height: auto;
     -webkit-box-sizing: border-box;
@@ -190,16 +184,20 @@ export default {
     padding: 10px;
     font-size: 16px;
 }
-.form-register .form-control:focus,
-.form-reset-password .form-control:focus {
+.form-change-password .form-control:focus {
     z-index: 2;
 }
-.form-register input,
-.form-reset-password input {
-    margin-bottom: 10px;
+.form-change-password input[id="inputOldPassword"] {
+    margin-bottom: -1px;
+    border-bottom-right-radius: 0;
+    border-bottom-left-radius: 0;
 }
-.form-register button,
-.form-reset-password button {
+.form-change-password input[id="inputNewPassword"] {
+    margin-bottom: 10px;
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+}
+.form-change-password button {
     background: linear-gradient(to right,
                               rgba(0, 78, 161, 1),
                               rgba(134, 60, 186, 1),

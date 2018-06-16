@@ -230,3 +230,11 @@ export function submitResetPassword(jwt, username) {
                       { headers: { Authorization: `Bearer: ${jwt}` } }
                     )
 }
+
+export function submitChangePassword(jwt, old_password, new_password ) {
+    return axios.create({withCredentials: true})
+                .post(`${API_URL}/change_password`,
+                      { old_password: old_password, new_password: new_password },
+                      { headers: { Authorization: `Bearer: ${jwt}` } }
+                    )
+}

@@ -1,14 +1,14 @@
 <template>
     <div class="container">
 
-      <form class="form-signin">
-        <h2 class="form-signin-heading"></h2>
-        <label for="inputUsername" class="sr-only">Username</label>
-        <input type="username" id="inputUsername" class="form-control" placeholder="Username" required autofocus v-model="username">
-        <label for="inputPassword" class="sr-only">Password</label>
-        <input type="password" id="inputPassword" class="form-control" placeholder="Password" required v-model="password">
-        <button class="btn btn-lg btn-primary btn-block" v-on:click.stop.prevent="login()" v-on:submit.stop.prevent="login()">Login</button>
-      </form>
+        <form class="form-signin">
+            <h2 class="form-signin-heading"></h2>
+            <label for="inputUsername" class="sr-only">Username</label>
+            <input type="username" id="inputUsername" class="form-control" placeholder="username" required autofocus v-model="username">
+            <label for="inputPassword" class="sr-only">Password</label>
+            <input type="password" id="inputPassword" class="form-control" placeholder="password" required v-model="password">
+            <button class="btn btn-lg btn-primary btn-block" v-on:click.stop.prevent="login()" v-on:submit.stop.prevent="login()">Login</button>
+        </form>
 
     </div>
 </template>
@@ -35,6 +35,7 @@ export default {
   max-width: 330px;
   padding: 15px;
   margin: 0 auto;
+  font-family: "Century Gothic", CenturyGothic, AppleGothic, sans-serif;
 }
 .form-signin .form-signin-heading,
 .form-signin .checkbox {
@@ -64,5 +65,12 @@ export default {
   margin-bottom: 10px;
   border-top-left-radius: 0;
   border-top-right-radius: 0;
+}
+.form-signin button {
+  background: linear-gradient(to right,
+                            rgba(0, 78, 161, 1),
+                            rgba(134, 60, 186, 1),
+                            rgba(185, 35, 163, 1));
+  text-transform: lowercase;
 }
 </style>
