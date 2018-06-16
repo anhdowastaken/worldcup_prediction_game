@@ -1,32 +1,48 @@
 <template>
-    <div class="container">
-        <div class="header clearfix">
-            <nav>
-                <ul class="nav nav-pills pull-right">
-                    <li role="presentation"><logout></logout></li>
-                </ul>
-            </nav>
-            <div>
-                <h3 class="text-muted">{{ this.userData['username'] }}</h3>
-                <p>Last login: {{ this.userData['last_login_at'] }}</p>
-            </div>
+    <div>
+        <div class="header-background">
+            <div class="header-background-under"></div>
         </div>
 
-        <form id="form-register" class="form-inline">
-            <h3>Register</h3>
-            <div class="form-group">
-                <input type="text" class="form-control" name="username" v-model="username_to_register" placeholder="Username" />
-                <button type="button" class="btn btn-default" v-on:click.stop.prevent="register()">Register</button>
-            </div>
-        </form>
+        <div class="container">
+            <div class="header">
+                <nav>
+                    <ul class="nav nav-pills pull-left">
+                        <li><span class="fa fa-user"
+                                  style="font-size: 24px;
+                                         color: white;
+                                         margin-top: 5px;
+                                         padding-right: 10px;
+                                         padding-top: 2px;
+                                         padding-bottom: 2px;"
+                                  v-on:click.stop.prevent="routeToUserCP()"></span></li>
+                    </ul>
 
-        <form id="form-reset-password" class="form-inline">
-            <h3>Reset password</h3>
-            <div class="form-group">
-                <input type="text" class="form-control" name="username" v-model="username_to_reset_password" placeholder="Username" />
-                <button type="button" class="btn btn-default" v-on:click.stop.prevent="resetPassword()">Reset</button>
+                    <ul class="nav nav-pills pull-right">
+                        <li><logout></logout></li>
+                    </ul>
+                </nav>
+                <account-info></account-info>
             </div>
-        </form>
+
+            <form class="form-register">
+                <h2 class="form-register-heading">Register New User</h2>
+                <label for="inputUsernameToRegister" class="sr-only">Username</label>
+                <input type="text" id="inputUsernameToRegister" class="form-control" placeholder="username" required v-model="username_to_register">
+                <button class="btn btn-lg btn-primary btn-block"
+                        v-on:submit.stop.prevent="doNothing()"
+                        v-on:click.stop.prevent="register()">Register</button>
+            </form>
+
+            <form class="form-reset-password">
+                <h2 class="form-reset-password-heading">Reset Password</h2>
+                <label for="inputUsernameToResetPassword" class="sr-only">Username</label>
+                <input type="text" id="inputUsernameToResetPassword" class="form-control" placeholder="username" required v-model="username_to_reset_password">
+                <button class="btn btn-lg btn-primary btn-block"
+                        v-on:submit.stop.prevent="doNothing()"
+                        v-on:click.stop.prevent="resetPassword()">Reset</button>
+            </form>
+        </div>
     </div>
 </template>
 
@@ -34,11 +50,13 @@
 import { mapState } from 'vuex' 
 import { isEmpty } from '@/utils'
 import { key_jwt, key_user_data } from '@/common'
+import AccountInfo from '@/components/AccountInfo'
 import Logout from '@/components/Logout'
 
 export default {
     name: 'Admin',
     components: {
+        AccountInfo,
         Logout
     },
     data() {
@@ -71,6 +89,9 @@ export default {
         resetPassword: function() {
             this.$store.dispatch('resetPassword', { jwt: this.jwt, username: this.username_to_reset_password})
             this.username_to_reset_password = ""
+        },
+        routeToUserCP: function() {
+            this.$router.push({ name: 'UserCP' })
         }
     }
 }
@@ -146,5 +167,43 @@ export default {
     .header {
         margin-bottom: 10px;
     }
+}
+
+.form-register,
+.form-reset-password {
+    max-width: 330px;
+    padding: 15px;
+    margin: 0 auto;
+    font-family: "Century Gothic", CenturyGothic, AppleGothic, sans-serif;
+}
+.form-register .form-register-heading,
+.form-reset-password .form-reset-password-heading {
+    margin-bottom: 10px;
+}
+.form-register .form-control,
+.form-reset-password .form-control {
+    position: relative;
+    height: auto;
+    -webkit-box-sizing: border-box;
+       -moz-box-sizing: border-box;
+            box-sizing: border-box;
+    padding: 10px;
+    font-size: 16px;
+}
+.form-register .form-control:focus,
+.form-reset-password .form-control:focus {
+    z-index: 2;
+}
+.form-register input,
+.form-reset-password input {
+    margin-bottom: 10px;
+}
+.form-register button,
+.form-reset-password button {
+    background: linear-gradient(to right,
+                              rgba(0, 78, 161, 1),
+                              rgba(134, 60, 186, 1),
+                              rgba(185, 35, 163, 1));
+    text-transform: lowercase;
 }
 </style>
