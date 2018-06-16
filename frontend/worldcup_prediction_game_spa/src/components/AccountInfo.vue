@@ -1,8 +1,14 @@
 <template>
-    <div v-if="userData">
-        <h3 class="text-muted">{{ this.userData['username'] }}</h3>
-        <p>Last login: {{ this.userData['last_login_at'] }}</p>
-        <p><span v-show="point > 0">-</span>{{ this.point }} point<span v-show="point > 0">s</span></p>
+    <div v-if="userData" class="account-info">
+        <div class="username">{{ this.userData['username'] }}</div>
+        <div class="last-login-at">Last login: {{ this.userData['last_login_at'] }}</div>
+        <div class="user-point">
+            <span class="user-point-number" v-if="point > 0">-{{ this.point }}</span>
+            <span class="user-point-number" v-else>{{ this.point }}</span>
+
+            <span class="user-point-text" v-if="point > 0"> points</span>
+            <span class="user-point-text" v-else> point</span>
+        </div>
     </div>
 </template>
 
@@ -66,4 +72,36 @@ export default {
 </script>
 
 <style scoped>
+.account-info {
+    color: white;
+    font-family: "Century Gothic", CenturyGothic, AppleGothic, sans-serif;
+    position: absolute;
+    bottom: 0;
+}
+
+.username {
+    font-size: 60px;
+    text-transform: lowercase;
+    font-weight: bold;
+}
+
+.last-login-at {
+    font-size: 10px;
+    text-transform: uppercase;
+}
+
+.user-point {
+    margin-top: 10px;
+    border-top: 3px solid white;
+    display: inline-block;
+}
+
+.user-point .user-point-number {
+    font-size: 100px;
+    font-weight: bold;
+}
+
+.user-point .user-point-text {
+    font-size: 32px;
+}
 </style>

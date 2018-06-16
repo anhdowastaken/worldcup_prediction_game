@@ -1,6 +1,6 @@
 <template>
     <div id="form-logout">
-        <button type="button" class="btn btn-default btn-block" v-on:click.stop.prevent="logout()">Logout</button>
+        <div class="button-logout" v-on:click.stop.prevent="logout()">logout <span class="fa fa-sign-out"></span></div>
     </div>
 </template>
 
@@ -24,4 +24,15 @@ export default {
 </script>
 
 <style scoped>
+.button-logout {
+    border: solid 2px;
+    border-color: white;
+    padding-top: 8px;
+    padding-bottom: 7px;
+    padding-left: 13px;
+    padding-right: 13px;
+    color: white;
+    font-family: "Century Gothic", CenturyGothic, AppleGothic, sans-serif;
+    font-weight: bold;
+}
 </style>
