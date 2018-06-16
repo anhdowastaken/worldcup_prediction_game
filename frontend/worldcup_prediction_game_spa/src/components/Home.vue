@@ -7,6 +7,27 @@
         <div class="container">
             <div class="header">
                 <nav>
+                    <ul class="nav nav-pills pull-left">
+                        <li>
+                            <span class="fa fa-user"
+                                  style="font-size: 24px;
+                                         color: white;
+                                         margin-top: 5px;
+                                         padding-right: 10px;
+                                         border-right:  solid 2px white;
+                                         padding-top: 2px;
+                                         padding-bottom: 2px;"
+                                  v-on:click.stop.prevent="routeToUserCP()">
+                            </span><span class="fa fa-trophy"
+                                         style="font-size: 24px;
+                                                color: white;
+                                                margin-top: 5px;
+                                                padding-left: 10px;
+                                                padding-top: 2px;
+                                                padding-bottom: 2px;"
+                                         v-on:click.stop.prevent="routeToRanking()"></span>
+                        </li>
+                    </ul>
                     <ul class="nav nav-pills pull-right">
                         <li><logout></logout></li>
                     </ul>
@@ -53,6 +74,15 @@ export default {
     }),
     beforeMount() {
         this.$store.dispatch('loadMatchesWithPredictions', { jwt: this.jwt })
+    },
+    methods: {
+        routeToUserCP: function() {
+            this.$router.push({ name: 'UserCP' })
+        },
+        routeToRanking: function() {
+            // FIXME:
+            // this.$router.push({ name: 'Ranking' })
+        }
     }
 }
 </script>
