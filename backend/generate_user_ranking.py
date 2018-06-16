@@ -1,6 +1,7 @@
 import requests
 import copy
 import json
+import time
 
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
@@ -95,8 +96,9 @@ def main():
                 ranking = sorted(ranking,
                     key=lambda r: r['point'], reverse=False
                 )
+                output = dict(time=int(time.time()), data=ranking)
                 with open('ranking.json', 'w') as outfile:
-                    json.dump(ranking, outfile)
+                    json.dump(output, outfile)
 
 if __name__ == '__main__':
     main()
