@@ -211,6 +211,18 @@ def get_matches_with_predictions(jwt_user):
                 matches = matches + aRound['matches']
 
     if len(matches) > 0:
+        for m in matches:
+            match_time_str = m['date'] + ' ' + m['time'] + ' ' + (m['timezone'] if m['timezone'] else '')
+            match_time = parser.parse(match_time_str)
+            match_time = match_time.replace(tzinfo=pytz.utc) + match_time.utcoffset()
+            m['match_time_utc_seconds'] = int(match_time.timestamp())
+            
+
+        # Sort matches by match time
+        matches = sorted(matches,
+                         key=lambda m: m['match_time_utc_seconds'], reverse=False
+                        )
+
         predictions = Prediction.query.filter(Prediction.user_id == jwt_user.id).all()
         for p in predictions:
             for m in matches:
