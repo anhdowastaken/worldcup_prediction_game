@@ -214,8 +214,9 @@ export default {
             }
         },
         toggleExpand: function() {
-            if (window.innerWidth > 768) { // FIXME: Small screen size is hard-code here
+            if (window.innerWidth > 768 || !this.hasMatchResult) { // FIXME: Small screen size is hard-code here
                 // Always expand with big screen size
+                // and do not collapse if the match doesn't have result
                 this.expand = true
             } else {
                 this.expand = !this.expand
