@@ -194,6 +194,36 @@ def get_matches():
 
     return response
 
+@api.route('/change_password', methods=['POST'])
+@token_required
+@login_required
+def change_password(jwt_user):
+    if jwt_user.id != current_user.id:
+        return jsonify(dict(message='Re-authentication required')), 401
+
+    data = request.get_json()
+    old_password = data['old_password']
+    new_password = data['new_password']
+
+    registered_user = User.query.filter_by(id=jwt_user.id).first()
+    if registered_user is None or bcrypt.check_password_hash(registered_user.password, old_password) == False:
+        return jsonify(dict(message='Old password is incorrect', changed=False)), 200
+
+    if new_password == '':
+        return jsonify(dict(message='New password can\'t be empty', changed=False)), 200
+
+    password_hash = bcrypt.generate_password_hash(new_password).decode('utf-8')
+    registered_user.password = password_hash
+    try:
+        db.session.commit()
+
+        return jsonify(dict(message='Password is changed successfully',
+                            changed=True)), 201
+    except (SQLAlchemyError) as e:
+        # TODO: Use logger
+        print(e)
+        return jsonify(dict(message='Changed failed', registered=False)), 500
+
 @api.route('/get_matches_with_prediction', methods=['GET'])
 @token_required
 @login_required
