@@ -43,6 +43,16 @@ export default {
 
             for (let i = 0; i < this.matches.length; i++) {
                 let match = this.matches[i]
+
+                // If this account is created after match started, don't count this match
+                let user_created_at = this.userData['created_at']
+                // Replace "-" by "/" to avoid issue on Safari
+                let match_time_str = match.date.replace(/-/g, "/") + ' ' + match.time + ' ' + (match.timezone ? match.timezone : '')
+                let match_time = new Date(match_time_str)
+                if (user_created_at * 1000 > match_time.getTime()) {
+                    continue
+                }
+
                 let prediction = match['prediction']
                 let score1 = (match['score1'] ? match['score1'] : 0)
                 score1 = score1 + (match['score1i'] ? match['score1i'] : 0)
@@ -53,7 +63,6 @@ export default {
                 score2 = score2 + (match['score2et'] ? match['score2et'] : 0)
                 score2 = score2 + (match['score2p'] ? match['score2p'] : 0)
 
-                // console.log(i + '-' + score1 + '-' + score2 + '-' + prediction)
                 if (match['score1'] == null || match['score1'] == undefined || match['score2'] == null || match['score2'] == undefined) {
                     continue
                 } else if (score1 == null || score1 == undefined || score2 == null || score2 == undefined) {
