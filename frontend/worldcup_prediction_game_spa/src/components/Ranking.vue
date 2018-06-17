@@ -23,11 +23,11 @@
         <div class="ranking">
             <div class="ranking-header">Top ocschos</div>
             <div class="ranking-table">
-                <table style="table-layout: fixed; width: 100%;">
+                <table>
                     <tr v-for="(record, index) in ranking" :key="record.id">
-                        <td style="width: 15%;">{{ index + 1 }}.</td>
-                        <td style="width: 60%;">{{ record.username }}</td>
-                        <td style="width: 25%;">{{ record.point }}p</td>
+                        <td style="padding-right: 10px;">{{ index + 1 }}.</td>
+                        <td >{{ record.username }}</td>
+                        <td style="padding-left: 80px;">{{ record.point }}p</td>
                     </tr>
                 </table>
             </div>
@@ -142,7 +142,6 @@ export default {
 .ranking {
     color: white;
     font-family: "Century Gothic", CenturyGothic, AppleGothic, sans-serif;
-    font-size: 32px;
     padding-right: 5px;
     padding-left: 5px;
 }
@@ -152,6 +151,8 @@ export default {
     display: inline;
     padding-bottom: 5px;
     text-transform: uppercase;
+    font-weight: bold;
+    font-size: 38px;
 }
 
 .ranking .ranking-table {
