@@ -4,6 +4,7 @@ import Login from '@/components/Login'
 import Home from '@/components/Home'
 import Admin from '@/components/Admin'
 import UserCP from '@/components/UserCP'
+import Ranking from '@/components/Ranking'
 import { key_jwt, key_user_data } from '@/common'
 
 Vue.use(Router)
@@ -70,6 +71,22 @@ const router = new Router({
             path: '/usercp',
             name: 'UserCP',
             component: UserCP,
+            beforeEnter(to, from, next) {
+                if (sessionStorage.getItem(key_jwt) == null ||
+                    sessionStorage.getItem(key_jwt) == undefined ||
+                    sessionStorage.getItem(key_jwt) == '') {
+                    next('/')
+                } else if (sessionStorage.getItem(key_user_data)) {
+                    next()
+                } else {
+                    next('/home')
+                }
+            }
+        },
+        {
+            path: '/ranking',
+            name: 'Ranking',
+            component: Ranking,
             beforeEnter(to, from, next) {
                 if (sessionStorage.getItem(key_jwt) == null ||
                     sessionStorage.getItem(key_jwt) == undefined ||

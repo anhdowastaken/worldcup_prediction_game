@@ -80,8 +80,7 @@ export default {
             this.$router.push({ name: 'UserCP' })
         },
         routeToRanking: function() {
-            // FIXME:
-            // this.$router.push({ name: 'Ranking' })
+            this.$router.push({ name: 'Ranking' })
         }
     }
 }
