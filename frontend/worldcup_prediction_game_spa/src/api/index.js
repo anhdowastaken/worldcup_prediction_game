@@ -245,3 +245,11 @@ export function getRanking(jwt) {
                       { headers: { Authorization: `Bearer: ${jwt}` } }
                     )
 }
+
+export function submitDeleteUser(jwt, username) {
+    return axios.create({withCredentials: true})
+                .post(`${API_URL}/delete_user`,
+                      { username: username },
+                      { headers: { Authorization: `Bearer: ${jwt}` } }
+                    )
+}

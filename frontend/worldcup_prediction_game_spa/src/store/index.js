@@ -11,6 +11,7 @@ import { submitLogin } from '@/api'
 import { submitLogout } from '@/api'
 import { submitRegister } from '@/api'
 import { submitResetPassword } from '@/api'
+import { submitDeleteUser} from '@/api'
 import { submitChangePassword } from '@/api'
 import { isValidJwt } from '@/utils'
 
@@ -121,6 +122,32 @@ const actions = {
                     // TODO: Use HTML dialog
                     alert(response.data['message'])
                     alert(response.data['user_data']['password'])
+                }
+            })
+            .catch(error => {
+                if (error.response.data['message']) {
+                    // TODO: Use HTML dialog
+                    alert(error.response.data['message'])
+                    // There is problem with authentication
+                    // Back to login
+                    if (error.response.status == 401) {
+                        context.dispatch('logout').then(() => {
+                            router.push({ name: "Login" })
+                        })
+                    }
+                } else if (error) {
+                    alert(error)
+                } else {
+                    alert('Error')
+                }
+            })
+    },
+    deleteUser(context, { jwt, username }) {
+        return submitDeleteUser(jwt, username)
+            .then(response => {
+                if (response.status === 201) {
+                    // TODO: Use HTML dialog
+                    alert(response.data['message'])
                 }
             })
             .catch(error => {

@@ -42,6 +42,15 @@
                         v-on:submit.stop.prevent="doNothing()"
                         v-on:click.stop.prevent="resetPassword()">Reset</button>
             </form>
+
+            <form class="form-delete-user">
+                <h2 class="form-delete-user-heading">Delete Existing User</h2>
+                <label for="inputUsernameToDelete" class="sr-only">Username</label>
+                <input type="text" id="inputUsernameToDelete" class="form-control" placeholder="username" required v-model="username_to_delete">
+                <button class="btn btn-lg btn-primary btn-block"
+                        v-on:submit.stop.prevent="doNothing()"
+                        v-on:click.stop.prevent="deleteUser()">Delete</button>
+            </form>
         </div>
     </div>
 </template>
@@ -62,7 +71,8 @@ export default {
     data() {
         return {
             username_to_register: "",
-            username_to_reset_password: ""
+            username_to_reset_password: "",
+            username_to_delete: ""
         }
     },
     computed: mapState({
@@ -83,12 +93,32 @@ export default {
     }),
     methods: {
         register: function() {
-            this.$store.dispatch('register', { jwt: this.jwt, username: this.username_to_register })
-            this.username_to_register = ""
+            if (this.username_to_register == "") {
+                alert('Empty username isn\'t allowed')
+            } else {
+                this.$store.dispatch('register', { jwt: this.jwt, username: this.username_to_register })
+                this.username_to_register = ""
+            }
         },
         resetPassword: function() {
-            this.$store.dispatch('resetPassword', { jwt: this.jwt, username: this.username_to_reset_password})
-            this.username_to_reset_password = ""
+            if (this.username_to_reset_password == "") {
+                alert('Empty username isn\'t allowed')
+            } else {
+                if (confirm('Are you sure?')) {
+                    this.$store.dispatch('resetPassword', { jwt: this.jwt, username: this.username_to_reset_password})
+                    this.username_to_reset_password = ""
+                }
+            }
+        },
+        deleteUser: function() {
+            if (this.username_to_delete == "") {
+                alert('Empty username isn\'t allowed')
+            } else {
+                if (confirm('Are you sure?')) {
+                    this.$store.dispatch('deleteUser', { jwt: this.jwt, username: this.username_to_delete})
+                    this.username_to_delete = ""
+                }
+            }
         },
         routeToUserCP: function() {
             this.$router.push({ name: 'UserCP' })
@@ -170,18 +200,21 @@ export default {
 }
 
 .form-register,
-.form-reset-password {
+.form-reset-password,
+.form-delete-user {
     max-width: 330px;
     padding: 15px;
     margin: 0 auto;
     font-family: "Century Gothic", CenturyGothic, AppleGothic, sans-serif;
 }
 .form-register .form-register-heading,
-.form-reset-password .form-reset-password-heading {
+.form-reset-password .form-reset-password-heading,
+.form-delete-user .form-delete-user-heading {
     margin-bottom: 10px;
 }
 .form-register .form-control,
-.form-reset-password .form-control {
+.form-reset-password .form-control,
+.form-delete-user .form-control {
     position: relative;
     height: auto;
     -webkit-box-sizing: border-box;
@@ -191,15 +224,18 @@ export default {
     font-size: 16px;
 }
 .form-register .form-control:focus,
-.form-reset-password .form-control:focus {
+.form-reset-password .form-control:focus,
+.form-delete-user .form-control:focus {
     z-index: 2;
 }
 .form-register input,
-.form-reset-password input {
+.form-reset-password input,
+.form-delete-user input {
     margin-bottom: 10px;
 }
 .form-register button,
-.form-reset-password button {
+.form-reset-password button,
+.form-delete-user button {
     background: linear-gradient(to right,
                               rgba(0, 78, 161, 1),
                               rgba(134, 60, 186, 1),

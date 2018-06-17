@@ -76,6 +76,9 @@ def register(jwt_user):
 
     data = request.get_json()
     username = data['username']
+    if username == '':
+        return jsonify(dict(message='Empty username isn\'t allowed', registered=False)), 400
+
     registered_user = User.query.filter_by(username=username).first()
     if registered_user is None:
         # Generate random string containing 8 characters
@@ -133,6 +136,44 @@ def reset_password(jwt_user):
             # TODO: Use logger
             print(e)
             return jsonify(dict(message='Reset failed', registered=False)), 500
+    else:
+        return jsonify(dict(message='User doesn\'t exist', registered=False)), 400
+
+@api.route('/delete_user', methods=['POST'])
+@token_required
+@login_required
+def delete_user(jwt_user):
+    if jwt_user.id != current_user.id:
+        # User ID stored in JWT token does not match the one stored in session
+        # It's better to re-authenticate
+        return jsonify(dict(message='Re-authentication required', delete=False)), 401
+
+    # Only admin has permission to reset password
+    if current_user.role != 'admin':
+        return jsonify(dict(message='Permission denied', delete=False)), 403
+
+    data = request.get_json()
+    username = data['username']
+    registered_user = User.query.filter_by(username=username).first()
+    if registered_user is not None:
+        if registered_user.role == 'admin':
+            return jsonify(dict(message='Permission denied', delete=False)), 403
+
+        try:
+            # Delete all predictions of the user
+            predictions = Prediction.query.filter_by(user_id=registered_user.id).all()
+            for p in predictions:
+                db.session.delete(p)
+                db.session.commit()
+
+            db.session.delete(registered_user)
+            db.session.commit()
+
+            return jsonify(dict(message='Delete successfully', delete=True)), 201
+        except (SQLAlchemyError) as e:
+            # TODO: Use logger
+            print(e)
+            return jsonify(dict(message='Delete failed', registered=False)), 500
     else:
         return jsonify(dict(message='User doesn\'t exist', registered=False)), 400
 
