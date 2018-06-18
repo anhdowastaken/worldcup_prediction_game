@@ -13,7 +13,7 @@
                                          color:white;
                                          padding-top:2px;
                                          margin-top:2px;"
-                                  v-on:click.stop.prevent="back"></span></li>
+                                  v-on:click.stop.prevent="goBack"></span></li>
                     </ul>
  
                     <ul class="nav nav-pills pull-right">
@@ -39,6 +39,7 @@
 
 <script>
 import { mapState } from 'vuex' 
+import { mapMutations } from 'vuex'
 import { isEmpty } from '@/utils'
 import { key_jwt, key_user_data } from '@/common'
 import AccountInfo from '@/components/AccountInfo'
@@ -73,17 +74,27 @@ export default {
         }
     }),
     methods: {
+        ...mapMutations([
+            'setNotificationContent',
+            'showNotification'
+        ]),
         changePassword: function() {
-            this.$store.dispatch('changePassword', { jwt: this.jwt,
-                                                     old_password: this.old_password,
-                                                     new_password: this.new_password })
-            this.old_password = ""
-            this.new_password = ""
+            if (this.old_password == '' || this.new_password == '') {
+                this.setNotificationContent({ header: 'Error',
+                                              body: 'Password can\'t be empty' })
+                this.showNotification()
+            } else {
+                this.$store.dispatch('changePassword', { jwt: this.jwt,
+                                                         old_password: this.old_password,
+                                                         new_password: this.new_password })
+                this.old_password = ""
+                this.new_password = ""
+            }
         },
         doNothing: function() {
 
         },
-        back: function() {
+        goBack: function() {
             if (window.history.length > 1) {
                 this.$router.go(-1)
             } else {

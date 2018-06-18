@@ -24,7 +24,12 @@ const state = {
     // changes by any components interested in them such as the Home component.
     matches: [],
     userData: {},
-    jwt: ''
+    jwt: '',
+    // States of notification modal
+    notificationHeader: '',
+    notificationBody: '',
+    notificationDisplay: false,
+    notificationDisplayStyle: 'none'
 }
 
 const actions = {
@@ -40,20 +45,26 @@ const actions = {
             })
             .catch(error => {
                 if (error.response.data['message']) {
-                    // TODO: Use HTML dialog
-                    alert(error.response.data['message'])
                     // There is problem with authentication
                     // Back to login
                     if (error.response.status == 401) {
-                        console.log('debug')
-                        context.dispatch('logout').then(() => {
-                            router.push({ name: "Login" })
+                        alert(error.response.data['message'])
+                        this.$store.dispatch('logout').then(() => {
+                            this.$router.push({ name: "Login" })
                         })
+                    } else {
+                        this.setNotificationContent({ header: 'Error',
+                                                      body: error.response.data['message'] })
+                        this.showNotification()
                     }
                 } else if (error) {
-                    alert(error)
+                    context.commit('setNotificationContent', { header: 'Error',
+                                                               body: error })
+                    context.commit('showNotification')
                 } else {
-                    alert('Error')
+                    context.commit('setNotificationContent', { header: 'Error',
+                                                               body: 'Error' })
+                    context.commit('showNotification')
                 }
             })
     },
@@ -68,12 +79,17 @@ const actions = {
             })
             .catch(error => {
                 if (error.response.data['message']) {
-                    // TODO: Use HTML dialog
-                    alert(error.response.data['message'])
+                    context.commit('setNotificationContent', { header: 'Error',
+                                                               body: error.response.data['message'] })
+                    context.commit('showNotification')
                 } else if (error) {
-                    alert('Error Authenticating: ', error)
+                    context.commit('setNotificationContent', { header: 'Error',
+                                                               body: 'Error Authenticating: ' + error })
+                    context.commit('showNotification')
                 } else {
-                    alert('Error')
+                    context.commit('setNotificationContent', { header: 'Error',
+                                                               body: 'Error' })
+                    context.commit('showNotification')
                 }
             })
     },
@@ -92,26 +108,33 @@ const actions = {
         return submitRegister(jwt, username)
             .then(response => {
                 if (response.status === 201) {
-                    // TODO: Use HTML dialog
-                    alert(response.data['message'])
-                    alert(response.data['user_data']['password'])
+                    context.commit('setNotificationContent', { header: 'Notification',
+                                                               body: response.data['message'] + '<br/>' + 'Password: ' + response.data['user_data']['password'] })
+                    context.commit('showNotification')
                 }
             })
             .catch(error => {
                 if (error.response.data['message']) {
-                    // TODO: Use HTML dialog
-                    alert(error.response.data['message'])
                     // There is problem with authentication
                     // Back to login
                     if (error.response.status == 401) {
-                        context.dispatch('logout').then(() => {
-                            router.push({ name: "Login" })
+                        alert(error.response.data['message'])
+                        this.$store.dispatch('logout').then(() => {
+                            this.$router.push({ name: "Login" })
                         })
+                    } else {
+                        this.setNotificationContent({ header: 'Error',
+                                                      body: error.response.data['message'] })
+                        this.showNotification()
                     }
                 } else if (error) {
-                    alert(error)
+                    context.commit('setNotificationContent', { header: 'Error',
+                                                               body: error })
+                    context.commit('showNotification')
                 } else {
-                    alert('Error')
+                    context.commit('setNotificationContent', { header: 'Error',
+                                                               body: 'Error' })
+                    context.commit('showNotification')
                 }
             })
     },
@@ -119,26 +142,33 @@ const actions = {
         return submitResetPassword(jwt, username)
             .then(response => {
                 if (response.status === 201) {
-                    // TODO: Use HTML dialog
-                    alert(response.data['message'])
-                    alert(response.data['user_data']['password'])
+                    context.commit('setNotificationContent', { header: 'Notification',
+                                                               body: response.data['message'] + '<br/>' + 'Password: ' + response.data['user_data']['password'] })
+                    context.commit('showNotification')
                 }
             })
             .catch(error => {
                 if (error.response.data['message']) {
-                    // TODO: Use HTML dialog
-                    alert(error.response.data['message'])
                     // There is problem with authentication
                     // Back to login
                     if (error.response.status == 401) {
-                        context.dispatch('logout').then(() => {
-                            router.push({ name: "Login" })
+                        alert(error.response.data['message'])
+                        this.$store.dispatch('logout').then(() => {
+                            this.$router.push({ name: "Login" })
                         })
+                    } else {
+                        this.setNotificationContent({ header: 'Error',
+                                                      body: error.response.data['message'] })
+                        this.showNotification()
                     }
                 } else if (error) {
-                    alert(error)
+                    context.commit('setNotificationContent', { header: 'Error',
+                                                               body: error })
+                    context.commit('showNotification')
                 } else {
-                    alert('Error')
+                    context.commit('setNotificationContent', { header: 'Error',
+                                                               body: 'Error' })
+                    context.commit('showNotification')
                 }
             })
     },
@@ -146,25 +176,33 @@ const actions = {
         return submitDeleteUser(jwt, username)
             .then(response => {
                 if (response.status === 201) {
-                    // TODO: Use HTML dialog
-                    alert(response.data['message'])
+                    context.commit('setNotificationContent', { header: 'Notification',
+                                                               body: response.data['message'] })
+                    context.commit('showNotification')
                 }
             })
             .catch(error => {
                 if (error.response.data['message']) {
-                    // TODO: Use HTML dialog
-                    alert(error.response.data['message'])
                     // There is problem with authentication
                     // Back to login
                     if (error.response.status == 401) {
-                        context.dispatch('logout').then(() => {
-                            router.push({ name: "Login" })
+                        alert(error.response.data['message'])
+                        this.$store.dispatch('logout').then(() => {
+                            this.$router.push({ name: "Login" })
                         })
+                    } else {
+                        this.setNotificationContent({ header: 'Error',
+                                                      body: error.response.data['message'] })
+                        this.showNotification()
                     }
                 } else if (error) {
-                    alert(error)
+                    context.commit('setNotificationContent', { header: 'Error',
+                                                               body: error })
+                    context.commit('showNotification')
                 } else {
-                    alert('Error')
+                    context.commit('setNotificationContent', { header: 'Error',
+                                                               body: 'Error' })
+                    context.commit('showNotification')
                 }
             })
     },
@@ -172,27 +210,37 @@ const actions = {
         return submitChangePassword(jwt, old_password, new_password )
             .then(response => {
                 if (response.status === 201) {
-                    // TODO: Use HTML dialog
-                    alert(response.data['message'])
+                    context.commit('setNotificationContent', { header: 'Notification',
+                                                               body: response.data['message'] })
+                    context.commit('showNotification')
                 } else {
-                    alert(response.data['message'])
+                    context.commit('setNotificationContent', { header: 'Error',
+                                                               body: response.data['message'] })
+                    context.commit('showNotification')
                 }
             })
             .catch(error => {
                 if (error.response.data['message']) {
-                    // TODO: Use HTML dialog
-                    alert(error.response.data['message'])
                     // There is problem with authentication
                     // Back to login
                     if (error.response.status == 401) {
-                        context.dispatch('logout').then(() => {
-                            router.push({ name: "Login" })
+                        alert(error.response.data['message'])
+                        this.$store.dispatch('logout').then(() => {
+                            this.$router.push({ name: "Login" })
                         })
+                    } else {
+                        this.setNotificationContent({ header: 'Error',
+                                                      body: error.response.data['message'] })
+                        this.showNotification()
                     }
                 } else if (error) {
-                    alert(error)
+                    context.commit('setNotificationContent', { header: 'Error',
+                                                               body: error })
+                    context.commit('showNotification')
                 } else {
-                    alert('Error')
+                    context.commit('setNotificationContent', { header: 'Error',
+                                                               body: 'Error' })
+                    context.commit('showNotification')
                 }
             })
     }
@@ -222,7 +270,6 @@ const mutations = {
         if (payload.userData['last_login_at']) {
             // Backend returns timestamp in second (UTC)
             let d = new Date()
-            // FIXME: Should force backend return timestamp of UTC+0?
             d = new Date(payload.userData['last_login_at'] * 1000 - d.getTimezoneOffset() * 60 * 1000)
             payload.userData['last_login_at'] = d.toLocaleString()
         }
@@ -241,6 +288,18 @@ const mutations = {
     removeJwtToken(state, payload) {
         sessionStorage.removeItem(key_jwt)
         state.jwt = ''
+    },
+    setNotificationContent(state, payload) {
+        state.notificationHeader = payload['header']
+        state.notificationBody = payload['body']
+    },
+    showNotification(state) {
+        state.notificationDisplayStyle = 'block'
+        state.notificationDisplay = true
+    },
+    hideNotification(state) {
+        state.notificationDisplayStyle = 'none'
+        state.notificationDisplay = false
     }
 }
 

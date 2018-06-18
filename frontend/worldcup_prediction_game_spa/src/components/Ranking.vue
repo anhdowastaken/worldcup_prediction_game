@@ -11,7 +11,7 @@
                                      color:white;
                                      padding-top:2px;
                                      margin-top:2px;"
-                              v-on:click.stop.prevent="back"></span></li>
+                              v-on:click.stop.prevent="goBack"></span></li>
                 </ul>
  
                 <ul class="nav nav-pills pull-right">
@@ -37,6 +37,7 @@
 
 <script>
 import { mapState } from 'vuex' 
+import { mapMutations } from 'vuex'
 import { key_jwt, key_user_data } from '@/common'
 import { getRanking } from '@/api'
 import Logout from '@/components/Logout'
@@ -70,24 +71,35 @@ export default {
             })
             .catch(error => {
                 if (error.response.data['message']) {
-                    // TODO: Use HTML dialog
-                    alert(error.response.data['message'])
                     // There is problem with authentication
                     // Back to login
                     if (error.response.status == 401) {
+                        alert(error.response.data['message'])
                         this.$store.dispatch('logout').then(() => {
                             this.$router.push({ name: "Login" })
                         })
+                    } else {
+                        this.setNotificationContent({ header: 'Error',
+                                                      body: error.response.data['message'] })
+                        this.showNotification()
                     }
                 } else if (error) {
-                    alert(error)
+                    this.setNotificationContent({ header: 'Error',
+                                                  body: error })
+                    this.showNotification()
                 } else {
-                    alert('Error')
+                    this.setNotificationContent({ header: 'Error',
+                                                  body: 'Error' })
+                    this.showNotification()
                 }
             })
     },
     methods: {
-        back: function() {
+        ...mapMutations([
+            'setNotificationContent',
+            'showNotification'
+        ]),
+        goBack: function() {
             if (window.history.length > 1) {
                 this.$router.go(-1)
             } else {

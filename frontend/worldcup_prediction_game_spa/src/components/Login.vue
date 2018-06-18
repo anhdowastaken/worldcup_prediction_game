@@ -1,23 +1,5 @@
 <template>
     <div class="container">
-      <transition name="modal">
-            <div class="modal fade" role="dialog"
-                 v-bind:style="{ display: modalDisplayStyle }"
-                 v-bind:class="{ in: showModal }">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <button type="button" class="close" v-on:click="hideModal">&times;</button>
-                            <h4 class="modal-title">{{ this.modalHeader}} </h4>
-                        </div>
-                        <div class="modal-body">
-                            <p>{{ this.modalBody }}</p>
-                        </div>
-                        <!-- <div class="modal-footer"></div> -->
-                    </div>
-                </div>
-            </div>
-      </transition>
 
         <form class="form-signin">
             <h2 class="form-signin-heading"></h2>
@@ -39,52 +21,24 @@ export default {
     name: 'Login',
     data() {
         return {
-            showModal: false,
-            modalDisplayStyle: 'none',
-            modalHeader: "",
-            modalBody: "",
             username: "",
             password: ""
         }
     },
     methods: {
         ...mapMutations([
-            'setJwtToken',
-            'setUserData'
+            'setNotificationContent',
+            'showNotification'
         ]),
         login: function() {
             if (this.username == '' || this.password == '') {
-                this.modalHeader = ('Error')
-                this.modalBody = ('Username and password can\'t be empty')
-                this.modalDisplayStyle = 'block'
-                this.showModal = true
+                this.setNotificationContent({ header: 'Error',
+                                              body: 'Username and password can\'t be empty' })
+                this.showNotification()
             } else {
-                submitLogin(this.username, this.password)
-                    .then(response => {
-                        console.log(response)
-                        if (response.status === 200) {
-                            this.setJwtToken({ jwt: response.data['token'] })
-                            this.setUserData({ userData: response.data['user_data'] })
-                            this.$router.push({ name: "Home" })
-                        }
-                    })
-                    .catch(error => {
-                        this.modalHeader = ('Error')
-                        if (error.response.data['message']) {
-                            this.modalBody = error.response.data['message']
-                        } else if (error) {
-                            this.modalBody = ('Error Authenticating: ' + error)
-                        } else {
-                            this.modalBody = ('Error')
-                        }
-                        this.modalDisplayStyle = 'block'
-                        this.showModal = true
-                    })
+                this.$store.dispatch('login', { username: this.username,
+                                                password: this.password })
             }
-        },
-        hideModal: function() {
-            this.modalDisplayStyle = 'none'
-            this.showModal = false
         }
     }
 }
@@ -92,45 +46,45 @@ export default {
 
 <style scoped>
 .form-signin {
-  max-width: 330px;
-  padding: 15px;
-  margin: 0 auto;
-  font-family: localCenturyGothic, "Century Gothic", CenturyGothic, "Apple Gothic", AppleGothic, "URW Gothic L", "Avant Garde", Futura, sans-serif;
+    max-width: 330px;
+    padding: 15px;
+    margin: 0 auto;
+    font-family: localCenturyGothic, "Century Gothic", CenturyGothic, "Apple Gothic", AppleGothic, "URW Gothic L", "Avant Garde", Futura, sans-serif;
 }
 .form-signin .form-signin-heading,
 .form-signin .checkbox {
-  margin-bottom: 10px;
+    margin-bottom: 10px;
 }
 .form-signin .checkbox {
-  font-weight: normal;
+    font-weight: normal;
 }
 .form-signin .form-control {
-  position: relative;
-  height: auto;
-  -webkit-box-sizing: border-box;
-     -moz-box-sizing: border-box;
-          box-sizing: border-box;
-  padding: 10px;
-  font-size: 16px;
+    position: relative;
+    height: auto;
+    -webkit-box-sizing: border-box;
+       -moz-box-sizing: border-box;
+            box-sizing: border-box;
+    padding: 10px;
+    font-size: 16px;
 }
 .form-signin .form-control:focus {
-  z-index: 2;
+    z-index: 2;
 }
 .form-signin input[type="username"] {
-  margin-bottom: -1px;
-  border-bottom-right-radius: 0;
-  border-bottom-left-radius: 0;
+    margin-bottom: -1px;
+    border-bottom-right-radius: 0;
+    border-bottom-left-radius: 0;
 }
 .form-signin input[type="password"] {
-  margin-bottom: 10px;
-  border-top-left-radius: 0;
-  border-top-right-radius: 0;
+    margin-bottom: 10px;
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
 }
 .form-signin button {
-  background: linear-gradient(to right,
-                            rgba(0, 78, 161, 1),
-                            rgba(134, 60, 186, 1),
-                            rgba(185, 35, 163, 1));
-  text-transform: lowercase;
+    background: linear-gradient(to right,
+                              rgba(0, 78, 161, 1),
+                              rgba(134, 60, 186, 1),
+                              rgba(185, 35, 163, 1));
+    text-transform: lowercase;
 }
 </style>

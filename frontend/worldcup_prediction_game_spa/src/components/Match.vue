@@ -77,6 +77,7 @@
 
 <script>
 import { mapState } from 'vuex' 
+import { mapMutations } from 'vuex'
 import { submitPrediction } from '@/api'
 import { msToTime } from '@/utils'
 import { key_jwt, key_user_data } from '@/common'
@@ -193,6 +194,10 @@ export default {
         }
     },
     methods: {
+        ...mapMutations([
+            'setNotificationContent',
+            'showNotification'
+        ]),
         submit: function(prediction) {
             if (prediction != this.currentPrediction) {
                 submitPrediction(this.jwt, this.match.num, prediction)
@@ -203,12 +208,26 @@ export default {
                     })
                     .catch(error => {
                         if (error.response.data['message']) {
-                            // TODO: Use HTML dialog
-                            alert(error.response.data['message'])
+                            // There is problem with authentication
+                            // Back to login
+                            if (error.response.status == 401) {
+                                alert(error.response.data['message'])
+                                this.$store.dispatch('logout').then(() => {
+                                    this.$router.push({ name: "Login" })
+                                })
+                            } else {
+                                this.setNotificationContent({ header: 'Error',
+                                                              body: error.response.data['message'] })
+                                this.showNotification()
+                            }
                         } else if (error) {
-                            alert(error)
+                            this.setNotificationContent({ header: 'Error',
+                                                          body: error })
+                            this.showNotification()
                         } else {
-                            alert('Error')
+                            this.setNotificationContent({ header: 'Error',
+                                                          body: 'Error' })
+                            this.showNotification()
                         }
                     })
             }

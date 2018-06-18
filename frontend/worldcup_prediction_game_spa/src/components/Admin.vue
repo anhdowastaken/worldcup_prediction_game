@@ -57,6 +57,7 @@
 
 <script>
 import { mapState } from 'vuex' 
+import { mapMutations } from 'vuex'
 import { isEmpty } from '@/utils'
 import { key_jwt, key_user_data } from '@/common'
 import AccountInfo from '@/components/AccountInfo'
@@ -92,9 +93,15 @@ export default {
         }
     }),
     methods: {
+        ...mapMutations([
+            'setNotificationContent',
+            'showNotification'
+        ]),
         register: function() {
             if (this.username_to_register == "") {
-                alert('Empty username isn\'t allowed')
+                this.setNotificationContent({ header: 'Error',
+                                              body: 'Empty username isn\'t allowed' })
+                this.showNotification()
             } else {
                 this.$store.dispatch('register', { jwt: this.jwt, username: this.username_to_register })
                 this.username_to_register = ""
@@ -102,7 +109,9 @@ export default {
         },
         resetPassword: function() {
             if (this.username_to_reset_password == "") {
-                alert('Empty username isn\'t allowed')
+                this.setNotificationContent({ header: 'Error',
+                                              body: 'Empty username isn\'t allowed' })
+                this.showNotification()
             } else {
                 if (confirm('Are you sure?')) {
                     this.$store.dispatch('resetPassword', { jwt: this.jwt, username: this.username_to_reset_password})
@@ -112,7 +121,9 @@ export default {
         },
         deleteUser: function() {
             if (this.username_to_delete == "") {
-                alert('Empty username isn\'t allowed')
+                this.setNotificationContent({ header: 'Error',
+                                              body: 'Empty username isn\'t allowed' })
+                this.showNotification()
             } else {
                 if (confirm('Are you sure?')) {
                     this.$store.dispatch('deleteUser', { jwt: this.jwt, username: this.username_to_delete})
