@@ -228,7 +228,7 @@ export default {
 
 <style scoped>
 .match {
-    font-family: "Century Gothic", CenturyGothic, AppleGothic, sans-serif;
+    font-family: "Century Gothic", CenturyGothic, "Apple Gothic", AppleGothic, "URW Gothic L", "Avant Garde", Futura, sans-serif;
     margin-bottom: 10px;
     padding: 5px;
 }

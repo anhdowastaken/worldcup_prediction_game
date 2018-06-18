@@ -205,7 +205,7 @@ export default {
     max-width: 330px;
     padding: 15px;
     margin: 0 auto;
-    font-family: "Century Gothic", CenturyGothic, AppleGothic, sans-serif;
+    font-family: "Century Gothic", CenturyGothic, "Apple Gothic", AppleGothic, "URW Gothic L", "Avant Garde", Futura, sans-serif;
 }
 .form-register .form-register-heading,
 .form-reset-password .form-reset-password-heading,
