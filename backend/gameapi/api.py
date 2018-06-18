@@ -187,6 +187,7 @@ def login():
     if registered_user is None or bcrypt.check_password_hash(registered_user.password, password) == False:
         return jsonify(dict(message='Username or password is invalid', authenticated=False)), 401
 
+    last_login_at = registered_user.last_login_at
     registered_user.last_login_at = datetime.utcnow()
     try:
         db.session.add(registered_user)
@@ -206,7 +207,7 @@ def login():
                             user_data=dict(user_id=registered_user.id,
                                            username=registered_user.username,
                                            role=registered_user.role,
-                                           last_login_at=int(registered_user.last_login_at.timestamp())))), 200
+                                           last_login_at=int(last_login_at.timestamp())))), 200
     else:
         return jsonify(dict(message='Logged in failed', authenticated=False)), 500
 
