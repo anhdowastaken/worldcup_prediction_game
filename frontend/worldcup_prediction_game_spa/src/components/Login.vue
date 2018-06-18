@@ -1,5 +1,23 @@
 <template>
     <div class="container">
+      <transition name="modal">
+            <div class="modal fade" role="dialog"
+                 v-bind:style="{ display: modalDisplayStyle }"
+                 v-bind:class="{ in: showModal }">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" v-on:click="hideModal">&times;</button>
+                            <h4 class="modal-title">{{ this.modalHeader}} </h4>
+                        </div>
+                        <div class="modal-body">
+                            <p>{{ this.modalBody }}</p>
+                        </div>
+                        <!-- <div class="modal-footer"></div> -->
+                    </div>
+                </div>
+            </div>
+      </transition>
 
         <form class="form-signin">
             <h2 class="form-signin-heading"></h2>
@@ -14,17 +32,59 @@
 </template>
 
 <script>
+import { mapMutations } from 'vuex'
+import { submitLogin } from '@/api'
+
 export default {
     name: 'Login',
     data() {
         return {
+            showModal: false,
+            modalDisplayStyle: 'none',
+            modalHeader: "",
+            modalBody: "",
             username: "",
             password: ""
         }
     },
     methods: {
+        ...mapMutations([
+            'setJwtToken',
+            'setUserData'
+        ]),
         login: function() {
-            this.$store.dispatch('login', { username: this.username, password: this.password })
+            if (this.username == '' || this.password == '') {
+                this.modalHeader = ('Error')
+                this.modalBody = ('Username and password can\'t be empty')
+                this.modalDisplayStyle = 'block'
+                this.showModal = true
+            } else {
+                submitLogin(this.username, this.password)
+                    .then(response => {
+                        console.log(response)
+                        if (response.status === 200) {
+                            this.setJwtToken({ jwt: response.data['token'] })
+                            this.setUserData({ userData: response.data['user_data'] })
+                            this.$router.push({ name: "Home" })
+                        }
+                    })
+                    .catch(error => {
+                        this.modalHeader = ('Error')
+                        if (error.response.data['message']) {
+                            this.modalBody = error.response.data['message']
+                        } else if (error) {
+                            this.modalBody = ('Error Authenticating: ' + error)
+                        } else {
+                            this.modalBody = ('Error')
+                        }
+                        this.modalDisplayStyle = 'block'
+                        this.showModal = true
+                    })
+            }
+        },
+        hideModal: function() {
+            this.modalDisplayStyle = 'none'
+            this.showModal = false
         }
     }
 }
