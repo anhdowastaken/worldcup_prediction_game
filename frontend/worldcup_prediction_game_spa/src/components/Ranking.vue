@@ -141,7 +141,7 @@ export default {
 
 .ranking {
     color: white;
-    font-family: "Century Gothic", CenturyGothic, "Apple Gothic", AppleGothic, "URW Gothic L", "Avant Garde", Futura, sans-serif;
+    font-family: localCenturyGothic, "Century Gothic", CenturyGothic, "Apple Gothic", AppleGothic, "URW Gothic L", "Avant Garde", Futura, sans-serif;
     padding-right: 5px;
     padding-left: 5px;
 }

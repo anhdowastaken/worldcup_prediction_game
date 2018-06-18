@@ -32,7 +32,7 @@ export default {
     padding-left: 13px;
     padding-right: 13px;
     color: white;
-    font-family: "Century Gothic", CenturyGothic, "Apple Gothic", AppleGothic, "URW Gothic L", "Avant Garde", Futura, sans-serif;
+    font-family: localCenturyGothic, "Century Gothic", CenturyGothic, "Apple Gothic", AppleGothic, "URW Gothic L", "Avant Garde", Futura, sans-serif;
     font-weight: bold;
 }
 </style>

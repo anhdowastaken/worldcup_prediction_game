@@ -74,7 +74,7 @@ export default {
 <style scoped>
 .account-info {
     color: white;
-    font-family: "Century Gothic", CenturyGothic, "Apple Gothic", AppleGothic, "URW Gothic L", "Avant Garde", Futura, sans-serif;
+    font-family: localCenturyGothic, "Century Gothic", CenturyGothic, "Apple Gothic", AppleGothic, "URW Gothic L", "Avant Garde", Futura, sans-serif;
     position: absolute;
     bottom: 0;
 }
