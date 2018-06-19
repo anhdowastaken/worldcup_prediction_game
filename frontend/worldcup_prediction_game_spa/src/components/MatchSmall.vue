@@ -10,13 +10,13 @@
 
         <div class="content">
             <div class="match-detail">
-            <div v-if="didMatchEnd && isPredictionCorrect"
-                  class="result-icon fa fa-thumbs-o-up"></div>
-            <div v-if="didMatchEnd && !isPredictionCorrect"
-                  class="result-icon fa fa-thumbs-o-down"></div>
-                        <div class="match-team-1">{{ this.match.team1.code }} {{ this.match.score1 }}</div>
-                        <div class="match-team-vs">:</div>
-                        <div class="match-team-2">{{ this.match.score2 }} {{ this.match.team2.code }}</div>
+                <div v-if="didMatchEnd && isPredictionCorrect"
+                      class="result-icon fa fa-thumbs-o-up"></div>
+                <div v-if="didMatchEnd && !isPredictionCorrect"
+                      class="result-icon fa fa-thumbs-o-down"></div>
+                <div class="match-team-1">{{ this.match.team1.code }} {{ this.match.score1 }}</div>
+                <div class="match-team-vs">:</div>
+                <div class="match-team-2">{{ this.match.score2 }} {{ this.match.team2.code }}</div>
             </div>
         </div>
 

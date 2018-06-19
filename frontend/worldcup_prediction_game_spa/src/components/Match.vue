@@ -18,10 +18,10 @@
             </div>
 
             <div class="content">
-                <span v-if="didMatchEnd && isPredictionCorrect"
-                      class="result-icon fa fa-thumbs-o-up"></span>
-                <span v-if="didMatchEnd && !isPredictionCorrect"
-                      class="result-icon fa fa-thumbs-o-down"></span>
+                <div v-if="didMatchEnd && isPredictionCorrect"
+                      class="result-icon fa fa-thumbs-o-up"></div>
+                <div v-if="didMatchEnd && !isPredictionCorrect"
+                      class="result-icon fa fa-thumbs-o-down"></div>
 
                 <div class="match-detail">
                     <div class="match-information">
@@ -372,5 +372,6 @@ export default {
     font-size: 24px;
     color: white;
     margin-top: 2px;
+    width: 10%;
 }
 </style>
