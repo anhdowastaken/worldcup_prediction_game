@@ -14,7 +14,8 @@
                                          margin-top: 5px;
                                          padding-right: 10px;
                                          padding-top: 2px;
-                                         padding-bottom: 2px;"
+                                         padding-bottom: 2px;
+                                         cursor: pointer;"
                                   v-on:click.stop.prevent="goToUserCP()"></span></li>
                     </ul>
 

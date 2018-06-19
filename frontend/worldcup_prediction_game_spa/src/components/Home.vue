@@ -16,7 +16,8 @@
                                          padding-right: 10px;
                                          border-right:  solid 2px white;
                                          padding-top: 2px;
-                                         padding-bottom: 2px;"
+                                         padding-bottom: 2px;
+                                         cursor: pointer;"
                                   v-on:click.stop.prevent="goToUserCP()">
                             </span><span class="fa fa-trophy"
                                          style="font-size: 24px;
@@ -24,7 +25,8 @@
                                                 margin-top: 5px;
                                                 padding-left: 10px;
                                                 padding-top: 2px;
-                                                padding-bottom: 2px;"
+                                                padding-bottom: 2px;
+                                                cursor: pointer;"
                                          v-on:click.stop.prevent="goToRanking()"></span>
                         </li>
                     </ul>

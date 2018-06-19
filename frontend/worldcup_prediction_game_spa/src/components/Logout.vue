@@ -33,5 +33,6 @@ export default {
     color: white;
     font-family: localCenturyGothic, "Century Gothic", CenturyGothic, "Apple Gothic", AppleGothic, "URW Gothic L", "Avant Garde", Futura, sans-serif;
     font-weight: bold;
+    cursor: pointer;
 }
 </style>

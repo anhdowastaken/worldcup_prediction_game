@@ -12,7 +12,8 @@
                                   style="font-size:24px;
                                          color:white;
                                          padding-top:2px;
-                                         margin-top:2px;"
+                                         margin-top:2px;
+                                         cursor: pointer;"
                                   v-on:click.stop.prevent="goBack"></span></li>
                     </ul>
  
