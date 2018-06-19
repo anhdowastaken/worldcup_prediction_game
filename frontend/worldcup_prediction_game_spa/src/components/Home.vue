@@ -37,7 +37,8 @@
                 <account-info></account-info>
             </div>
 
-            <div class="row matches">
+            <loader v-if="!isFetchingCompleted"></loader>
+            <div v-else class="row matches">
                 <match v-for="match in matches" v-bind:match="match" :key="match.num"></match>
             </div>
         </div>
@@ -52,6 +53,7 @@ import { key_jwt, key_user_data } from '@/common'
 import Logout from '@/components/Logout'
 import AccountInfo from '@/components/AccountInfo'
 import Match from '@/components/Match'
+import Loader from '@/components/Loader'
 import { fetchMatchesWithPredictions } from '@/api'
 
 export default {
@@ -59,11 +61,12 @@ export default {
     components: {
         Logout,
         AccountInfo,
-        Match
+        Match,
+        Loader
     },
     data () {
         return {
-
+            isFetchingCompleted: false
         }
     },
     computed: mapState({
@@ -79,11 +82,13 @@ export default {
     beforeMount() {
         fetchMatchesWithPredictions(this.jwt)
             .then((response) => {
+                this.isFetchingCompleted = true
                 if (response.status === 200) {
                     this.setMatches({ matches: response.data })
                 }
             })
             .catch(error => {
+                this.isFetchingCompleted = true
                 if (error.response.data['message']) {
                     // There is problem with authentication
                     // Back to login
