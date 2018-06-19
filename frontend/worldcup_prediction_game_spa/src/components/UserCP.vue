@@ -32,7 +32,8 @@
                 <input type="password" id="inputNewPassword" class="form-control" placeholder="new password" required v-model="new_password">
                 <button class="btn btn-lg btn-primary btn-block"
                         v-on:submit.stop.prevent="doNothing()"
-                        v-on:click.stop.prevent="changePassword()">Change</button>
+                        v-on:click.stop.prevent="changePassword()"
+                        v-bind:disabled="!isHttpRequestCompleted">Change</button>
             </form>
         </div>
     </div>
@@ -56,7 +57,8 @@ export default {
     data() {
         return {
             old_password: "",
-            new_password: ""
+            new_password: "",
+            isHttpRequestCompleted: true
         }
     },
     computed: mapState({
@@ -86,8 +88,10 @@ export default {
                                               body: 'Password can\'t be empty' })
                 this.showNotification()
             } else {
+                this.isHttpRequestCompleted = false
                 submitChangePassword(this.jwt, this.old_password, this.new_password )
                     .then(response => {
+                        this.isHttpRequestCompleted = true
                         if (response.status === 201) {
                             this.setNotificationContent({ header: 'Notification',
                                                           body: response.data['message'] })
@@ -97,6 +101,7 @@ export default {
                         }
                     })
                     .catch(error => {
+                        this.isHttpRequestCompleted = true
                         if (error.response.data['message']) {
                             // There is problem with authentication
                             // Back to login

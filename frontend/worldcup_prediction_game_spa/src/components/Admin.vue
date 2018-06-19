@@ -32,7 +32,8 @@
                 <input type="text" id="inputUsernameToRegister" class="form-control" placeholder="username" required v-model="username_to_register">
                 <button class="btn btn-lg btn-primary btn-block"
                         v-on:submit.stop.prevent="doNothing()"
-                        v-on:click.stop.prevent="register()">Register</button>
+                        v-on:click.stop.prevent="register()"
+                        v-bind:disabled="!isHttpRequestCompleted">Register</button>
             </form>
 
             <form class="form-reset-password">
@@ -41,7 +42,8 @@
                 <input type="text" id="inputUsernameToResetPassword" class="form-control" placeholder="username" required v-model="username_to_reset_password">
                 <button class="btn btn-lg btn-primary btn-block"
                         v-on:submit.stop.prevent="doNothing()"
-                        v-on:click.stop.prevent="resetPassword()">Reset</button>
+                        v-on:click.stop.prevent="resetPassword()"
+                        v-bind:disabled="!isHttpRequestCompleted">Reset</button>
             </form>
 
             <form class="form-delete-user">
@@ -50,7 +52,8 @@
                 <input type="text" id="inputUsernameToDelete" class="form-control" placeholder="username" required v-model="username_to_delete">
                 <button class="btn btn-lg btn-primary btn-block"
                         v-on:submit.stop.prevent="doNothing()"
-                        v-on:click.stop.prevent="deleteUser()">Delete</button>
+                        v-on:click.stop.prevent="deleteUser()"
+                        v-bind:disabled="!isHttpRequestCompleted">Delete</button>
             </form>
         </div>
     </div>
@@ -77,7 +80,8 @@ export default {
         return {
             username_to_register: "",
             username_to_reset_password: "",
-            username_to_delete: ""
+            username_to_delete: "",
+            isHttpRequestCompleted: true
         }
     },
     computed: mapState({
@@ -107,8 +111,10 @@ export default {
                                               body: 'Empty username isn\'t allowed' })
                 this.showNotification()
             } else {
+                this.isHttpRequestCompleted = false
                 submitRegister(this.jwt, this.username_to_register)
                     .then(response => {
+                        this.isHttpRequestCompleted = true
                         if (response.status === 201) {
                             this.setNotificationContent({ header: 'Notification',
                                                           body: response.data['message'] + '\nPassword: ' + response.data['user_data']['password'] })
@@ -117,6 +123,7 @@ export default {
                         }
                     })
                     .catch(error => {
+                        this.isHttpRequestCompleted = true
                         if (error.response.data['message']) {
                             // There is problem with authentication
                             // Back to login
@@ -147,8 +154,10 @@ export default {
                 this.showNotification()
             } else {
                 if (confirm('Are you sure?')) {
+                    this.isHttpRequestCompleted = false
                     submitResetPassword(this.jwt, this.username_to_reset_password)
                         .then(response => {
+                            this.isHttpRequestCompleted = true
                             if (response.status === 201) {
                                 this.setNotificationContent({ header: 'Notification',
                                                               body: response.data['message'] + '\nPassword: ' + response.data['user_data']['password'] })
@@ -157,6 +166,7 @@ export default {
                             }
                         })
                         .catch(error => {
+                            this.isHttpRequestCompleted = true
                             if (error.response.data['message']) {
                                 // There is problem with authentication
                                 // Back to login
@@ -188,8 +198,10 @@ export default {
                 this.showNotification()
             } else {
                 if (confirm('Are you sure?')) {
+                    this.isHttpRequestCompleted = false
                     submitDeleteUser(this.jwt, this.username_to_delete)
                         .then(response => {
+                            this.isHttpRequestCompleted = true
                             if (response.status === 201) {
                                 this.setNotificationContent({ header: 'Notification',
                                                               body: response.data['message'] })
@@ -198,6 +210,7 @@ export default {
                             }
                         })
                         .catch(error => {
+                            this.isHttpRequestCompleted = true
                             if (error.response.data['message']) {
                                 // There is problem with authentication
                                 // Back to login

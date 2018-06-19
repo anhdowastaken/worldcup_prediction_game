@@ -46,17 +46,17 @@
                 <button type="button"
                         class="btn btn-default"
                         v-bind:class="{ 'btn-success': isTeam1Chosen, 'disabled': !enoughTimeToPredict }"
-                        v-bind:disabled="!enoughTimeToPredict"
+                        v-bind:disabled="!enoughTimeToPredict || !isHttpRequestCompleted"
                         v-on:click.stop.prevent="submit(1)">{{ this.match.team1.code }}</button>
                 <button type="button"
                         class="btn btn-default"
                         v-bind:class="{ 'btn-success': isDrawChosen, 'disabled': !enoughTimeToPredict }"
-                        v-bind:disabled="!enoughTimeToPredict"
+                        v-bind:disabled="!enoughTimeToPredict || !isHttpRequestCompleted"
                         v-on:click.stop.prevent="submit(0)">DRAW</button>
                 <button type="button"
                         class="btn btn-default"
                         v-bind:class="{ 'btn-success': isTeam2Chosen, 'disabled': !enoughTimeToPredict }"
-                        v-bind:disabled="!enoughTimeToPredict"
+                        v-bind:disabled="!enoughTimeToPredict || !isHttpRequestCompleted"
                         v-on:click.stop.prevent="submit(2)">{{ this.match.team2.code }}</button>
             </div>
         </div>
@@ -78,7 +78,8 @@ export default {
     },
     data() {
         return {
-            currentPrediction: this.match.prediction
+            currentPrediction: this.match.prediction,
+            isHttpRequestCompleted: true
         }
     },
     computed: mapState({
@@ -167,13 +168,16 @@ export default {
         ]),
         submit: function(prediction) {
             if (prediction != this.currentPrediction) {
+                this.isHttpRequestCompleted = false
                 submitPrediction(this.jwt, this.match.num, prediction)
                     .then(response => {
+                        this.isHttpRequestCompleted = true
                         if (response.status === 201) {
                             this.currentPrediction = prediction
                         }
                     })
                     .catch(error => {
+                        this.isHttpRequestCompleted = true
                         if (error.response.data['message']) {
                             // There is problem with authentication
                             // Back to login

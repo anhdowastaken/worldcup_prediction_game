@@ -7,7 +7,10 @@
             <input type="username" id="inputUsername" class="form-control" placeholder="username" required autofocus v-model="username">
             <label for="inputPassword" class="sr-only">Password</label>
             <input type="password" id="inputPassword" class="form-control" placeholder="password" required v-model="password">
-            <button class="btn btn-lg btn-primary btn-block" v-on:click.stop.prevent="login()" v-on:submit.stop.prevent="login()">Login</button>
+            <button class="btn btn-lg btn-primary btn-block"
+                    v-on:click.stop.prevent="login()"
+                    v-on:submit.stop.prevent="login()"
+                    v-bind:disabled="!isHttpRequestCompleted">Login</button>
         </form>
 
     </div>
@@ -22,7 +25,8 @@ export default {
     data() {
         return {
             username: "",
-            password: ""
+            password: "",
+            isHttpRequestCompleted: true
         }
     },
     methods: {
@@ -38,8 +42,10 @@ export default {
                                               body: 'Username and password can\'t be empty' })
                 this.showNotification()
             } else {
+                this.isHttpRequestCompleted = false
                 submitLogin(this.username, this.password)
                     .then(response => {
+                        this.isHttpRequestCompleted = true
                         if (response.status === 200) {
                             this.setJwtToken({ jwt: response.data['token'] })
                             this.setUserData({ userData: response.data['user_data'] })
@@ -47,6 +53,7 @@ export default {
                         }
                     })
                     .catch(error => {
+                        this.isHttpRequestCompleted = true
                         if (error.response.data['message']) {
                             this.setNotificationContent({ header: 'Error',
                                                           body: error.response.data['message'] })
