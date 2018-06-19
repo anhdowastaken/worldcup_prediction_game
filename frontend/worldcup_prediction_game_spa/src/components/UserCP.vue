@@ -41,6 +41,7 @@
 import { mapState } from 'vuex' 
 import { mapMutations } from 'vuex'
 import { isEmpty } from '@/utils'
+import { submitChangePassword } from '@/api'
 import { key_jwt, key_user_data } from '@/common'
 import AccountInfo from '@/components/AccountInfo'
 import Logout from '@/components/Logout'
@@ -84,11 +85,38 @@ export default {
                                               body: 'Password can\'t be empty' })
                 this.showNotification()
             } else {
-                this.$store.dispatch('changePassword', { jwt: this.jwt,
-                                                         old_password: this.old_password,
-                                                         new_password: this.new_password })
-                this.old_password = ""
-                this.new_password = ""
+                submitChangePassword(this.jwt, this.old_password, this.new_password )
+                    .then(response => {
+                        if (response.status === 201) {
+                            this.setNotificationContent({ header: 'Notification',
+                                                          body: response.data['message'] })
+                            this.showNotification()
+                            this.old_password = ""
+                            this.new_password = ""
+                        }
+                    })
+                    .catch(error => {
+                        if (error.response.data['message']) {
+                            // There is problem with authentication
+                            // Back to login
+                            if (error.response.status == 401) {
+                                alert(error.response.data['message'])
+                                this.$store.dispatch('logout')
+                            } else {
+                                this.setNotificationContent({ header: 'Error',
+                                                              body: error.response.data['message'] })
+                                this.showNotification()
+                            }
+                        } else if (error) {
+                            context.commit('setNotificationContent', { header: 'Error',
+                                                                       body: error })
+                            context.commit('showNotification')
+                        } else {
+                            context.commit('setNotificationContent', { header: 'Error',
+                                                                       body: 'Error' })
+                            context.commit('showNotification')
+                        }
+                    })
             }
         },
         doNothing: function() {

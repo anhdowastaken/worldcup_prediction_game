@@ -53,14 +53,14 @@ export default {
                 score2 = score2 + (match['score2et'] ? match['score2et'] : 0)
                 score2 = score2 + (match['score2p'] ? match['score2p'] : 0)
 
-                // console.log(i + '-' + score1 + '-' + score2 + '-' + prediction)
+                // Don't count if match has not started
                 if (match['score1'] == null || match['score1'] == undefined || match['score2'] == null || match['score2'] == undefined) {
                     continue
-                } else if (score1 == null || score1 == undefined || score2 == null || score2 == undefined) {
+                } else if (score1 == null || score1 == undefined || score2 == null || score2 == undefined) { // Hmm, there is an unexpected problem
                     continue
                 } else if (!((prediction == 0 && score1 == score2) ||
                              (prediction == 1 && score1 > score2) ||
-                             (prediction == 2 && score1 < score2))) {
+                             (prediction == 2 && score1 < score2))) { // Predict incorrectly
                     current_point = current_point + 10
                 }
             }

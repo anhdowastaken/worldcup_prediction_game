@@ -27,6 +27,8 @@ export default {
     },
     methods: {
         ...mapMutations([
+            'setJwtToken',
+            'setUserData',
             'setNotificationContent',
             'showNotification'
         ]),
@@ -36,8 +38,29 @@ export default {
                                               body: 'Username and password can\'t be empty' })
                 this.showNotification()
             } else {
-                this.$store.dispatch('login', { username: this.username,
-                                                password: this.password })
+                submitLogin(this.username, this.password)
+                    .then(response => {
+                        if (response.status === 200) {
+                            this.setJwtToken({ jwt: response.data['token'] })
+                            this.setUserData({ userData: response.data['user_data'] })
+                            this.$router.push({ name: "Home" })
+                        }
+                    })
+                    .catch(error => {
+                        if (error.response.data['message']) {
+                            this.setNotificationContent({ header: 'Error',
+                                                          body: error.response.data['message'] })
+                            this.showNotification()
+                        } else if (error) {
+                            this.setNotificationContent({ header: 'Error',
+                                                          body: 'Error Authenticating: ' + error })
+                            this.showNotification()
+                        } else {
+                            this.setNotificationContent({ header: 'Error',
+                                                          body: 'Error' })
+                            this.showNotification()
+                        }
+                    })
             }
         }
     }

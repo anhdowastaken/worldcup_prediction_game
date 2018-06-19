@@ -17,7 +17,6 @@ export default {
     methods: {
         logout: function() {
             this.$store.dispatch('logout')
-                .then(() => this.$router.replace({ name: "Login" }))
         }
     }
 }

@@ -17,7 +17,7 @@
                                          border-right:  solid 2px white;
                                          padding-top: 2px;
                                          padding-bottom: 2px;"
-                                  v-on:click.stop.prevent="routeToUserCP()">
+                                  v-on:click.stop.prevent="goToUserCP()">
                             </span><span class="fa fa-trophy"
                                          style="font-size: 24px;
                                                 color: white;
@@ -25,7 +25,7 @@
                                                 padding-left: 10px;
                                                 padding-top: 2px;
                                                 padding-bottom: 2px;"
-                                         v-on:click.stop.prevent="routeToRanking()"></span>
+                                         v-on:click.stop.prevent="goToRanking()"></span>
                         </li>
                     </ul>
                     <ul class="nav nav-pills pull-right">
@@ -45,10 +45,12 @@
 
 <script>
 import { mapState } from 'vuex' 
+import { mapMutations } from 'vuex'
 import { key_jwt, key_user_data } from '@/common'
 import Logout from '@/components/Logout'
 import AccountInfo from '@/components/AccountInfo'
 import Match from '@/components/Match'
+import { fetchMatchesWithPredictions } from '@/api'
 
 export default {
     name: 'Home',
@@ -73,13 +75,45 @@ export default {
         }
     }),
     beforeMount() {
-        this.$store.dispatch('loadMatchesWithPredictions', { jwt: this.jwt })
+        fetchMatchesWithPredictions(this.jwt)
+            .then((response) => {
+                if (response.status === 200) {
+                    this.setMatches({ matches: response.data })
+                }
+            })
+            .catch(error => {
+                if (error.response.data['message']) {
+                    // There is problem with authentication
+                    // Back to login
+                    if (error.response.status == 401) {
+                        alert(error.response.data['message'])
+                        this.$store.dispatch('logout')
+                    } else {
+                        this.setNotificationContent({ header: 'Error',
+                                                      body: error.response.data['message'] })
+                        this.showNotification()
+                    }
+                } else if (error) {
+                    this.setNotificationContent({ header: 'Error',
+                                                  body: error })
+                    this.showNotification()
+                } else {
+                    this.setNotificationContent({ header: 'Error',
+                                                  body: 'Error' })
+                    this.showNotification()
+                }
+            })
     },
     methods: {
-        routeToUserCP: function() {
+        ...mapMutations([
+            'setMatches',
+            'setNotificationContent',
+            'showNotification'
+        ]),
+        goToUserCP: function() {
             this.$router.push({ name: 'UserCP' })
         },
-        routeToRanking: function() {
+        goToRanking: function() {
             this.$router.push({ name: 'Ranking' })
         }
     }

@@ -15,7 +15,7 @@
                                          padding-right: 10px;
                                          padding-top: 2px;
                                          padding-bottom: 2px;"
-                                  v-on:click.stop.prevent="routeToUserCP()"></span></li>
+                                  v-on:click.stop.prevent="goToUserCP()"></span></li>
                     </ul>
 
                     <ul class="nav nav-pills pull-right">
@@ -62,6 +62,9 @@ import { isEmpty } from '@/utils'
 import { key_jwt, key_user_data } from '@/common'
 import AccountInfo from '@/components/AccountInfo'
 import Logout from '@/components/Logout'
+import { submitRegister } from '@/api'
+import { submitResetPassword } from '@/api'
+import { submitDeleteUser} from '@/api'
 
 export default {
     name: 'Admin',
@@ -103,8 +106,37 @@ export default {
                                               body: 'Empty username isn\'t allowed' })
                 this.showNotification()
             } else {
-                this.$store.dispatch('register', { jwt: this.jwt, username: this.username_to_register })
-                this.username_to_register = ""
+                submitRegister(this.jwt, this.username_to_register)
+                    .then(response => {
+                        if (response.status === 201) {
+                            this.setNotificationContent({ header: 'Notification',
+                                                          body: response.data['message'] + '<br/>' + 'Password: ' + response.data['user_data']['password'] })
+                            this.showNotification()
+                            this.username_to_register = ""
+                        }
+                    })
+                    .catch(error => {
+                        if (error.response.data['message']) {
+                            // There is problem with authentication
+                            // Back to login
+                            if (error.response.status == 401) {
+                                alert(error.response.data['message'])
+                                this.$store.dispatch('logout')
+                            } else {
+                                this.setNotificationContent({ header: 'Error',
+                                                              body: error.response.data['message'] })
+                                this.showNotification()
+                            }
+                        } else if (error) {
+                            this.setNotificationContent({ header: 'Error',
+                                                          body: error })
+                            this.showNotification()
+                        } else {
+                            this.setNotificationContent({ header: 'Error',
+                                                          body: 'Error' })
+                            this.showNotification()
+                        }
+                    })
             }
         },
         resetPassword: function() {
@@ -114,8 +146,37 @@ export default {
                 this.showNotification()
             } else {
                 if (confirm('Are you sure?')) {
-                    this.$store.dispatch('resetPassword', { jwt: this.jwt, username: this.username_to_reset_password})
-                    this.username_to_reset_password = ""
+                    submitResetPassword(this.jwt, this.username_to_reset_password)
+                        .then(response => {
+                            if (response.status === 201) {
+                                this.setNotificationContent({ header: 'Notification',
+                                                              body: response.data['message'] + '<br/>' + 'Password: ' + response.data['user_data']['password'] })
+                                this.showNotification()
+                                this.username_to_reset_password = ""
+                            }
+                        })
+                        .catch(error => {
+                            if (error.response.data['message']) {
+                                // There is problem with authentication
+                                // Back to login
+                                if (error.response.status == 401) {
+                                    alert(error.response.data['message'])
+                                    this.$store.dispatch('logout')
+                                } else {
+                                    this.setNotificationContent({ header: 'Error',
+                                                                  body: error.response.data['message'] })
+                                    this.showNotification()
+                                }
+                            } else if (error) {
+                                this.setNotificationContent({ header: 'Error',
+                                                              body: error })
+                                this.showNotification()
+                            } else {
+                                this.setNotificationContent({ header: 'Error',
+                                                              body: 'Error' })
+                                this.showNotification()
+                            }
+                        })
                 }
             }
         },
@@ -126,12 +187,41 @@ export default {
                 this.showNotification()
             } else {
                 if (confirm('Are you sure?')) {
-                    this.$store.dispatch('deleteUser', { jwt: this.jwt, username: this.username_to_delete})
-                    this.username_to_delete = ""
+                    submitDeleteUser(this.jwt, this.username_to_delete)
+                        .then(response => {
+                            if (response.status === 201) {
+                                this.setNotificationContent({ header: 'Notification',
+                                                              body: response.data['message'] })
+                                this.showNotification()
+                                this.username_to_delete = ""
+                            }
+                        })
+                        .catch(error => {
+                            if (error.response.data['message']) {
+                                // There is problem with authentication
+                                // Back to login
+                                if (error.response.status == 401) {
+                                    alert(error.response.data['message'])
+                                    this.$store.dispatch('logout')
+                                } else {
+                                    this.setNotificationContent({ header: 'Error',
+                                                                  body: error.response.data['message'] })
+                                    this.showNotification()
+                                }
+                            } else if (error) {
+                                this.setNotificationContent({ header: 'Error',
+                                                              body: error })
+                                this.showNotification()
+                            } else {
+                                this.setNotificationContent({ header: 'Error',
+                                                              body: 'Error' })
+                                this.showNotification()
+                            }
+                        })
                 }
             }
         },
-        routeToUserCP: function() {
+        goToUserCP: function() {
             this.$router.push({ name: 'UserCP' })
         }
     }

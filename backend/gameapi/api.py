@@ -250,10 +250,10 @@ def change_password(jwt_user):
 
     registered_user = User.query.filter_by(id=jwt_user.id).first()
     if registered_user is None or bcrypt.check_password_hash(registered_user.password, old_password) == False:
-        return jsonify(dict(message='Old password is incorrect', changed=False)), 200
+        return jsonify(dict(message='Old password is incorrect', changed=False)), 400
 
     if new_password == '':
-        return jsonify(dict(message='New password can\'t be empty', changed=False)), 200
+        return jsonify(dict(message='New password can\'t be empty', changed=False)), 400
 
     password_hash = bcrypt.generate_password_hash(new_password).decode('utf-8')
     registered_user.password = password_hash

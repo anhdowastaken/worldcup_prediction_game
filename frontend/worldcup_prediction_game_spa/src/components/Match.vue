@@ -212,9 +212,7 @@ export default {
                             // Back to login
                             if (error.response.status == 401) {
                                 alert(error.response.data['message'])
-                                this.$store.dispatch('logout').then(() => {
-                                    this.$router.push({ name: "Login" })
-                                })
+                                this.$store.dispatch('logout')
                             } else {
                                 this.setNotificationContent({ header: 'Error',
                                                               body: error.response.data['message'] })
