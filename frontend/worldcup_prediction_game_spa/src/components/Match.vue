@@ -1,15 +1,12 @@
 <template>
     <div class="col-lg-6 match">
-
         <match-small v-if="hasMatchResult"
                      v-show="!expand"
                      v-bind:match="match"
                      v-on:click.native="toggleExpand()"></match-small>
-
         <match-big v-show="expand"
                    v-bind:match="match"
                    v-on:click.native="toggleExpand()"></match-big>
-        </div>
     </div>
 </template>
 
