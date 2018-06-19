@@ -1,5 +1,9 @@
 <template>
-    <div class="loader"></div>
+    <div class="loader">
+        <div class="loader-bar"></div>
+        <div class="loader-bar"></div>
+        <div class="loader-bar"></div>
+    </div>
 </template>
 
 <script>
@@ -19,18 +23,37 @@ export default {
 <style scoped>
 .loader {
     margin-top: 50px;
-    margin-left: auto;
-    margin-right: auto;
-    border: 16px solid #f3f3f3; /* Light grey */
-    border-top: 16px solid #3498db; /* Blue */
-    border-radius: 50%;
-    width: 120px;
-    height: 120px;
-    animation: spin 2s linear infinite;
+    text-align: center;
+}
+.loader-bar {
+    display: inline-block;
+    width: 4px;
+    height: 20px;
+    border-radius: 4px;
+    animation: loading 1s ease-in-out infinite;
+}
+.loader-bar:nth-child(1) {
+    background-color: rgba(0, 78, 161, 1);
+    animation-delay: 0;
+}
+.loader-bar:nth-child(2) {
+    background-color: rgba(134, 60, 186, 1);
+    animation-delay: 0.09s;
+}
+.loader-bar:nth-child(3) {
+    background-color: rgba(185, 35, 163, 1);
+    animation-delay: .18s;
 }
 
-@keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
+@keyframes loading {
+    0% {
+        transform: scale(1);
+    }
+    20% {
+        transform: scale(1, 2.2);
+    }
+    40% {
+        transform: scale(1);
+    }
 }
 </style>

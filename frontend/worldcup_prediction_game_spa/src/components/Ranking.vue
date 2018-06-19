@@ -21,7 +21,8 @@
             </nav>
         </div>
 
-        <div class="ranking">
+        <loader v-if="!isFetchingCompleted"></loader>
+        <div v-else class="ranking">
             <div class="ranking-header">Top ocschos</div>
             <div class="ranking-table">
                 <table>
@@ -42,14 +43,17 @@ import { mapMutations } from 'vuex'
 import { key_jwt, key_user_data } from '@/common'
 import { getRanking } from '@/api'
 import Logout from '@/components/Logout'
+import Loader from '@/components/Loader'
 
 export default {
     name: 'Ranking',
     components: {
-        Logout
+        Logout,
+        Loader
     },
     data () {
         return {
+            isFetchingCompleted: false,
             ranking: []
         }
     },
@@ -66,11 +70,13 @@ export default {
         // this.$store.dispatch('loadMatchesWithPredictions', { jwt: this.jwt })
         getRanking(this.jwt)
             .then(response => {
+                this.isFetchingCompleted = true
                 if (response.status === 200) {
                     this.ranking = response.data['ranking']
                 }
             })
             .catch(error => {
+                this.isFetchingCompleted = true
                 if (error.response.data['message']) {
                     // There is problem with authentication
                     // Back to login
