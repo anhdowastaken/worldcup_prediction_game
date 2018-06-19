@@ -111,7 +111,7 @@ export default {
                     .then(response => {
                         if (response.status === 201) {
                             this.setNotificationContent({ header: 'Notification',
-                                                          body: response.data['message'] + '<br/>' + 'Password: ' + response.data['user_data']['password'] })
+                                                          body: response.data['message'] + '\nPassword: ' + response.data['user_data']['password'] })
                             this.showNotification()
                             this.username_to_register = ""
                         }
@@ -151,7 +151,7 @@ export default {
                         .then(response => {
                             if (response.status === 201) {
                                 this.setNotificationContent({ header: 'Notification',
-                                                              body: response.data['message'] + '<br/>' + 'Password: ' + response.data['user_data']['password'] })
+                                                              body: response.data['message'] + '\nPassword: ' + response.data['user_data']['password'] })
                                 this.showNotification()
                                 this.username_to_reset_password = ""
                             }

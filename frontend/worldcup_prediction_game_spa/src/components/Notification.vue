@@ -9,7 +9,7 @@
                         <button type="button" class="close" v-on:click.stop.prevent="hideNotification">&times;</button>
                         <h4 class="modal-title">{{ this.notificationHeader }} </h4>
                     </div>
-                    <div class="modal-body">
+                    <div class="modal-body" style="white-space: pre-line;">
                         <p>{{ this.notificationBody }}</p>
                     </div>
                     <!-- <div class="modal-footer"></div> -->
