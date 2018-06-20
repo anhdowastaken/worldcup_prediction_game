@@ -1,5 +1,6 @@
 <template>
-    <div class="col-lg-6 match">
+    <div class="col-lg-6 match"
+         v-bind:class="{ 'most-recent': this.match.most_recent }">
         <match-small v-if="hasMatchResult"
                      v-show="!expand"
                      v-bind:match="match"
