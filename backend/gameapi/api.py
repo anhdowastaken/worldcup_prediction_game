@@ -15,7 +15,7 @@ from dateutil import parser
 from dateutil.tz import UTC
 import pytz
 from functools import wraps
-from flask import Blueprint, jsonify, request, Response, redirect
+from flask import Blueprint, jsonify, request, Response, redirect, session
 from flask_login import current_user, login_user, logout_user, login_required
 from sqlalchemy.exc import SQLAlchemyError
 import jwt
@@ -179,6 +179,7 @@ def delete_user(jwt_user):
 
 @api.route('/login', methods=['POST'])
 def login():
+    session.permanent = True
     data = request.get_json()
     username = data['username']
     password = data['password']
@@ -214,6 +215,7 @@ def login():
 @api.route('/logout', methods=['POST'])
 def logout():
     logout_user()
+    session.clear()
 
     return jsonify(dict(message='Logged out successfully')), 200
 

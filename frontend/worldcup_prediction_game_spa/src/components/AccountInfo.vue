@@ -30,9 +30,9 @@ export default {
             if (!isEmpty(state.userData)) {
                 return state.userData
             } else {
-                let ret = sessionStorage.getItem(key_user_data)
+                let ret = localStorage.getItem(key_user_data)
                 if (ret) {
-                    return JSON.parse(sessionStorage.getItem(key_user_data))
+                    return JSON.parse(localStorage.getItem(key_user_data))
                 } else {
                     return null
                 }
