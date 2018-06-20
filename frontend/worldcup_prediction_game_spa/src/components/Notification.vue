@@ -34,7 +34,9 @@ export default {
         notificationHeader: state => state.notificationHeader,
         notificationBody: state => state.notificationBody,
         notificationDisplay: state => state.notificationDisplay,
-        notificationDisplayStyle: state => state.notificationDisplayStyle
+        notificationDisplayStyle: state => state.notificationDisplayStyle,
+        notificationRedirectAfterClose: state => state.notificationRedirectAfterClose,
+        notificationRedirectComponentName: state => state.notificationRedirectComponentName
     }),
     methods: {
         ...mapMutations([

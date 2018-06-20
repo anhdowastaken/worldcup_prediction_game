@@ -5,8 +5,6 @@
 </template>
 
 <script>
-import { mapState } from 'vuex' 
-
 export default {
     name: 'Logout',
     data() {
@@ -17,6 +15,9 @@ export default {
     methods: {
         logout: function() {
             this.$store.dispatch('logout')
+                .then(() => {
+                    this.$router.push({ name: 'Login' })
+                })
         }
     }
 }

@@ -23,7 +23,9 @@ const state = {
     notificationHeader: '',
     notificationBody: '',
     notificationDisplay: false,
-    notificationDisplayStyle: 'none'
+    notificationDisplayStyle: 'none',
+    notificationRedirectAfterClose: false,
+    notificationRedirectComponentName: ''
 }
 
 const actions = {
@@ -36,7 +38,6 @@ const actions = {
                 context.commit('setMatches', { matches: [] })
                 context.commit('removeJwtToken')
                 context.commit('removeUserData')
-                router.push({ name: "Login" })
             })
             .catch(error => {
                 if (error) {
@@ -99,6 +100,10 @@ const mutations = {
         state.notificationHeader = payload['header']
         state.notificationBody = payload['body']
     },
+    setNotificationRedirectAfterClose(state, payload) {
+        state.notificationRedirectAfterClose = payload['redirect']
+        state.notificationRedirectComponentName = payload['component_name']
+    },
     showNotification(state) {
         state.notificationDisplayStyle = 'block'
         state.notificationDisplay = true
@@ -106,6 +111,14 @@ const mutations = {
     hideNotification(state) {
         state.notificationDisplayStyle = 'none'
         state.notificationDisplay = false
+        state.notificationHeader = ''
+        state.notificationBody = ''
+        if (state.notificationRedirectAfterClose == true) {
+            state.notificationRedirectAfterClose = false
+            let componentName = state.notificationRedirectComponentName
+            state.notificationRedirectComponentName = ''
+            router.push({ name: componentName })
+        }
     }
 }
 

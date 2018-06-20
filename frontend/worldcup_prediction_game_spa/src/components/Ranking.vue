@@ -78,15 +78,15 @@ export default {
             .catch(error => {
                 this.isFetchingCompleted = true
                 if (error.response.data['message']) {
+                    this.setNotificationContent({ header: 'Error',
+                                                  body: error.response.data['message'] })
+                    this.showNotification()
                     // There is problem with authentication
                     // Back to login
                     if (error.response.status == 401) {
-                        alert(error.response.data['message'])
+                        this.setNotificationRedirectAfterClose({ redirect: true,
+                                                                 component_name: 'Login' })
                         this.$store.dispatch('logout')
-                    } else {
-                        this.setNotificationContent({ header: 'Error',
-                                                      body: error.response.data['message'] })
-                        this.showNotification()
                     }
                 } else if (error) {
                     this.setNotificationContent({ header: 'Error',
@@ -102,7 +102,8 @@ export default {
     methods: {
         ...mapMutations([
             'setNotificationContent',
-            'showNotification'
+            'showNotification',
+            'setNotificationRedirectAfterClose'
         ]),
         goBack: function() {
             if (window.history.length > 1) {
