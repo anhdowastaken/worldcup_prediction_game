@@ -1,5 +1,6 @@
 <template>
     <div>
+        <move-top></move-top>
         <div class="header-background">
             <div class="header-background-under"></div>
         </div>
@@ -54,6 +55,7 @@ import Logout from '@/components/Logout'
 import AccountInfo from '@/components/AccountInfo'
 import Match from '@/components/Match'
 import Loader from '@/components/Loader'
+import MoveTop from '@/components/MoveTop'
 import { fetchMatchesWithPredictions } from '@/api'
 
 export default {
@@ -62,7 +64,8 @@ export default {
         Logout,
         AccountInfo,
         Match,
-        Loader
+        Loader,
+        MoveTop
     },
     data () {
         return {
