@@ -14,7 +14,6 @@
 import { mapState } from 'vuex' 
 import { mapMutations } from 'vuex'
 import { submitPrediction } from '@/api'
-import { msToTime } from '@/utils'
 import { key_jwt, key_user_data } from '@/common'
 import MatchBig from '@/components/MatchBig'
 import MatchSmall from '@/components/MatchSmall'

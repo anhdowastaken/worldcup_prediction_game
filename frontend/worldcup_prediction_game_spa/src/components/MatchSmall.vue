@@ -25,8 +25,6 @@
 </template>
 
 <script>
-import { msToTime } from '@/utils'
-
 export default {
     name: 'MatchSmall',
     props: {

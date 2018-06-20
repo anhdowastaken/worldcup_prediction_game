@@ -78,6 +78,8 @@ export default {
     },
     data() {
         return {
+            timeToPredict: '',
+            enoughTimeToPredict: false,
             currentPrediction: this.match.prediction,
             isHttpRequestCompleted: true
         }
@@ -89,24 +91,6 @@ export default {
             } else {
                 return sessionStorage.getItem(key_jwt)
             }
-        },
-        enoughTimeToPredict: function() {
-            // Replace "-" by "/" to avoid issue on Safari
-            let match_time = this.match.date.replace(/-/g, "/") + ' ' + this.match.time + ' ' + (this.match.timezone ? this.match.timezone : '')
-            let d = new Date(match_time)
-            let diff = d.getTime() - Date.now()
-            if (diff > 0) {
-                return true
-            } else {
-                return false
-            }
-        },
-        timeToPredict: function() {
-            // Replace "-" by "/" to avoid issue on Safari
-            let match_time = this.match.date.replace(/-/g, "/") + ' ' + this.match.time + ' ' + (this.match.timezone ? this.match.timezone : '')
-            let d = new Date(match_time)
-            let diff = d.getTime() - Date.now()
-            return msToTime(diff)
         },
         isTeam1Chosen: function() {
             if (this.currentPrediction == 1) {
@@ -161,12 +145,36 @@ export default {
             }
         }
     }),
+    mounted: function() {
+        this.calculateTimeToPredict()
+    },
     methods: {
         ...mapMutations([
             'setNotificationContent',
             'showNotification',
             'setNotificationRedirectAfterClose'
         ]),
+        calculateTimeToPredict: function() {
+            let match_time = this.match.date.replace(/-/g, "/") + ' ' + this.match.time + ' ' + (this.match.timezone ? this.match.timezone : '')
+            let d = new Date(match_time)
+            let diff = d.getTime() - Date.now()
+
+            if (diff > 0) {
+                this.enoughTimeToPredict = true
+                // Show second if diff time is under 1 hour
+                if (diff > 0 && diff < 60 * 60 * 1000) {
+                    this.timeToPredict = msToTime(diff, true, true, true, true)
+                } else {
+                    this.timeToPredict = msToTime(diff)
+                }
+                // Create countdown
+                setTimeout(() => {
+                    this.calculateTimeToPredict()
+                }, 1000)
+            } else {
+                this.enoughTimeToPredict = false
+            }
+        },
         submit: function(prediction) {
             if (prediction != this.currentPrediction) {
                 this.isHttpRequestCompleted = false
