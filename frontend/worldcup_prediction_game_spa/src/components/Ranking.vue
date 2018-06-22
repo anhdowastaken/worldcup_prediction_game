@@ -10,8 +10,9 @@
                               style="font-size:24px;
                                      color:white;
                                      padding-top:2px;
-                                     margin-top:2px;"
-                              v-on:click.stop.prevent="back"></span></li>
+                                     margin-top:2px;
+                                     cursor: pointer;"
+                              v-on:click.stop.prevent="goBack"></span></li>
                 </ul>
  
                 <ul class="nav nav-pills pull-right">
@@ -20,7 +21,8 @@
             </nav>
         </div>
 
-        <div class="ranking">
+        <loader v-if="!isFetchingCompleted"></loader>
+        <div v-else class="ranking">
             <div class="ranking-header">Top ocschos</div>
             <div class="ranking-table">
                 <table>
@@ -37,17 +39,21 @@
 
 <script>
 import { mapState } from 'vuex' 
+import { mapMutations } from 'vuex'
 import { key_jwt, key_user_data } from '@/common'
 import { getRanking } from '@/api'
 import Logout from '@/components/Logout'
+import Loader from '@/components/Loader'
 
 export default {
     name: 'Ranking',
     components: {
-        Logout
+        Logout,
+        Loader
     },
     data () {
         return {
+            isFetchingCompleted: false,
             ranking: []
         }
     },
@@ -64,30 +70,42 @@ export default {
         // this.$store.dispatch('loadMatchesWithPredictions', { jwt: this.jwt })
         getRanking(this.jwt)
             .then(response => {
+                this.isFetchingCompleted = true
                 if (response.status === 200) {
                     this.ranking = response.data['ranking']
                 }
             })
             .catch(error => {
+                this.isFetchingCompleted = true
                 if (error.response.data['message']) {
-                    // TODO: Use HTML dialog
-                    alert(error.response.data['message'])
+                    this.setNotificationContent({ header: 'Error',
+                                                  body: error.response.data['message'] })
+                    this.showNotification()
                     // There is problem with authentication
                     // Back to login
                     if (error.response.status == 401) {
-                        this.$store.dispatch('logout').then(() => {
-                            this.$router.push({ name: "Login" })
-                        })
+                        this.setNotificationRedirectAfterClose({ redirect: true,
+                                                                 component_name: 'Login' })
+                        this.$store.dispatch('logout')
                     }
                 } else if (error) {
-                    alert(error)
+                    this.setNotificationContent({ header: 'Error',
+                                                  body: error })
+                    this.showNotification()
                 } else {
-                    alert('Error')
+                    this.setNotificationContent({ header: 'Error',
+                                                  body: 'Error' })
+                    this.showNotification()
                 }
             })
     },
     methods: {
-        back: function() {
+        ...mapMutations([
+            'setNotificationContent',
+            'showNotification',
+            'setNotificationRedirectAfterClose'
+        ]),
+        goBack: function() {
             if (window.history.length > 1) {
                 this.$router.go(-1)
             } else {
@@ -141,7 +159,7 @@ export default {
 
 .ranking {
     color: white;
-    font-family: "Century Gothic", CenturyGothic, AppleGothic, sans-serif;
+    font-family: localCenturyGothic, "Century Gothic", CenturyGothic, "Apple Gothic", AppleGothic, "URW Gothic L", "Avant Garde", Futura, sans-serif;
     padding-right: 5px;
     padding-left: 5px;
 }

@@ -14,8 +14,9 @@
                                          margin-top: 5px;
                                          padding-right: 10px;
                                          padding-top: 2px;
-                                         padding-bottom: 2px;"
-                                  v-on:click.stop.prevent="routeToUserCP()"></span></li>
+                                         padding-bottom: 2px;
+                                         cursor: pointer;"
+                                  v-on:click.stop.prevent="goToUserCP()"></span></li>
                     </ul>
 
                     <ul class="nav nav-pills pull-right">
@@ -31,7 +32,8 @@
                 <input type="text" id="inputUsernameToRegister" class="form-control" placeholder="username" required v-model="username_to_register">
                 <button class="btn btn-lg btn-primary btn-block"
                         v-on:submit.stop.prevent="doNothing()"
-                        v-on:click.stop.prevent="register()">Register</button>
+                        v-on:click.stop.prevent="register()"
+                        v-bind:disabled="!isHttpRequestCompleted">Register</button>
             </form>
 
             <form class="form-reset-password">
@@ -40,7 +42,8 @@
                 <input type="text" id="inputUsernameToResetPassword" class="form-control" placeholder="username" required v-model="username_to_reset_password">
                 <button class="btn btn-lg btn-primary btn-block"
                         v-on:submit.stop.prevent="doNothing()"
-                        v-on:click.stop.prevent="resetPassword()">Reset</button>
+                        v-on:click.stop.prevent="resetPassword()"
+                        v-bind:disabled="!isHttpRequestCompleted">Reset</button>
             </form>
 
             <form class="form-delete-user">
@@ -49,7 +52,8 @@
                 <input type="text" id="inputUsernameToDelete" class="form-control" placeholder="username" required v-model="username_to_delete">
                 <button class="btn btn-lg btn-primary btn-block"
                         v-on:submit.stop.prevent="doNothing()"
-                        v-on:click.stop.prevent="deleteUser()">Delete</button>
+                        v-on:click.stop.prevent="deleteUser()"
+                        v-bind:disabled="!isHttpRequestCompleted">Delete</button>
             </form>
         </div>
     </div>
@@ -57,10 +61,14 @@
 
 <script>
 import { mapState } from 'vuex' 
+import { mapMutations } from 'vuex'
 import { isEmpty } from '@/utils'
 import { key_jwt, key_user_data } from '@/common'
 import AccountInfo from '@/components/AccountInfo'
 import Logout from '@/components/Logout'
+import { submitRegister } from '@/api'
+import { submitResetPassword } from '@/api'
+import { submitDeleteUser} from '@/api'
 
 export default {
     name: 'Admin',
@@ -72,7 +80,8 @@ export default {
         return {
             username_to_register: "",
             username_to_reset_password: "",
-            username_to_delete: ""
+            username_to_delete: "",
+            isHttpRequestCompleted: true
         }
     },
     computed: mapState({
@@ -92,35 +101,146 @@ export default {
         }
     }),
     methods: {
+        ...mapMutations([
+            'setNotificationContent',
+            'showNotification',
+            'setNotificationRedirectAfterClose'
+        ]),
         register: function() {
             if (this.username_to_register == "") {
-                alert('Empty username isn\'t allowed')
+                this.setNotificationContent({ header: 'Error',
+                                              body: 'Empty username isn\'t allowed' })
+                this.showNotification()
             } else {
-                this.$store.dispatch('register', { jwt: this.jwt, username: this.username_to_register })
-                this.username_to_register = ""
+                this.isHttpRequestCompleted = false
+                submitRegister(this.jwt, this.username_to_register)
+                    .then(response => {
+                        this.isHttpRequestCompleted = true
+                        if (response.status === 201) {
+                            this.setNotificationContent({ header: 'Notification',
+                                                          body: response.data['message'] +
+                                                                '\nUsername: ' + response.data['user_data']['username'] + 
+                                                                '\nPassword: ' + response.data['user_data']['password'] })
+                            this.showNotification()
+                            this.username_to_register = ""
+                        }
+                    })
+                    .catch(error => {
+                        this.isHttpRequestCompleted = true
+                        if (error.response.data['message']) {
+                            this.setNotificationContent({ header: 'Error',
+                                                          body: error.response.data['message'] })
+                            this.showNotification()
+                            // There is problem with authentication
+                            // Back to login
+                            if (error.response.status == 401) {
+                                this.setNotificationRedirectAfterClose({ redirect: true,
+                                                                         component_name: 'Login' })
+                                this.$store.dispatch('logout')
+                            }
+                        } else if (error) {
+                            this.setNotificationContent({ header: 'Error',
+                                                          body: error })
+                            this.showNotification()
+                        } else {
+                            this.setNotificationContent({ header: 'Error',
+                                                          body: 'Error' })
+                            this.showNotification()
+                        }
+                    })
             }
         },
         resetPassword: function() {
             if (this.username_to_reset_password == "") {
-                alert('Empty username isn\'t allowed')
+                this.setNotificationContent({ header: 'Error',
+                                              body: 'Empty username isn\'t allowed' })
+                this.showNotification()
             } else {
                 if (confirm('Are you sure?')) {
-                    this.$store.dispatch('resetPassword', { jwt: this.jwt, username: this.username_to_reset_password})
-                    this.username_to_reset_password = ""
+                    this.isHttpRequestCompleted = false
+                    submitResetPassword(this.jwt, this.username_to_reset_password)
+                        .then(response => {
+                            this.isHttpRequestCompleted = true
+                            if (response.status === 201) {
+                                this.setNotificationContent({ header: 'Notification',
+                                                              body: response.data['message'] +
+                                                                    '\nUsername: ' + response.data['user_data']['username'] + 
+                                                                    '\nPassword: ' + response.data['user_data']['password'] })
+                                this.showNotification()
+                                this.username_to_reset_password = ""
+                            }
+                        })
+                        .catch(error => {
+                            this.isHttpRequestCompleted = true
+                            if (error.response.data['message']) {
+                                this.setNotificationContent({ header: 'Error',
+                                                              body: error.response.data['message'] })
+                                this.showNotification()
+                                // There is problem with authentication
+                                // Back to login
+                                if (error.response.status == 401) {
+                                    this.setNotificationRedirectAfterClose({ redirect: true,
+                                                                             component_name: 'Login' })
+                                    this.$store.dispatch('logout')
+                                }
+                            } else if (error) {
+                                this.setNotificationContent({ header: 'Error',
+                                                              body: error })
+                                this.showNotification()
+                            } else {
+                                this.setNotificationContent({ header: 'Error',
+                                                              body: 'Error' })
+                                this.showNotification()
+                            }
+                        })
                 }
             }
         },
         deleteUser: function() {
             if (this.username_to_delete == "") {
-                alert('Empty username isn\'t allowed')
+                this.setNotificationContent({ header: 'Error',
+                                              body: 'Empty username isn\'t allowed' })
+                this.showNotification()
             } else {
                 if (confirm('Are you sure?')) {
-                    this.$store.dispatch('deleteUser', { jwt: this.jwt, username: this.username_to_delete})
-                    this.username_to_delete = ""
+                    this.isHttpRequestCompleted = false
+                    submitDeleteUser(this.jwt, this.username_to_delete)
+                        .then(response => {
+                            this.isHttpRequestCompleted = true
+                            if (response.status === 201) {
+                                this.setNotificationContent({ header: 'Notification',
+                                                              body: response.data['message'] })
+                                this.showNotification()
+                                this.username_to_delete = ""
+                            }
+                        })
+                        .catch(error => {
+                            this.isHttpRequestCompleted = true
+                            if (error.response.data['message']) {
+                                this.setNotificationContent({ header: 'Error',
+                                                              body: error.response.data['message'] })
+                                this.showNotification()
+                                // There is problem with authentication
+                                // Back to login
+                                if (error.response.status == 401) {
+                                    this.setNotificationRedirectAfterClose({ redirect: true,
+                                                                             component_name: 'Login' })
+                                    this.$store.dispatch('logout')
+                                }
+                            } else if (error) {
+                                this.setNotificationContent({ header: 'Error',
+                                                              body: error })
+                                this.showNotification()
+                            } else {
+                                this.setNotificationContent({ header: 'Error',
+                                                              body: 'Error' })
+                                this.showNotification()
+                            }
+                        })
                 }
             }
         },
-        routeToUserCP: function() {
+        goToUserCP: function() {
             this.$router.push({ name: 'UserCP' })
         }
     }
@@ -205,7 +325,7 @@ export default {
     max-width: 330px;
     padding: 15px;
     margin: 0 auto;
-    font-family: "Century Gothic", CenturyGothic, AppleGothic, sans-serif;
+    font-family: localCenturyGothic, "Century Gothic", CenturyGothic, "Apple Gothic", AppleGothic, "URW Gothic L", "Avant Garde", Futura, sans-serif;
 }
 .form-register .form-register-heading,
 .form-reset-password .form-reset-password-heading,

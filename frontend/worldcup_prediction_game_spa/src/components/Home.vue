@@ -1,5 +1,6 @@
 <template>
     <div>
+        <move-top></move-top>
         <div class="header-background">
             <div class="header-background-under"></div>
         </div>
@@ -16,16 +17,18 @@
                                          padding-right: 10px;
                                          border-right:  solid 2px white;
                                          padding-top: 2px;
-                                         padding-bottom: 2px;"
-                                  v-on:click.stop.prevent="routeToUserCP()">
+                                         padding-bottom: 2px;
+                                         cursor: pointer;"
+                                  v-on:click.stop.prevent="goToUserCP()">
                             </span><span class="fa fa-trophy"
                                          style="font-size: 24px;
                                                 color: white;
                                                 margin-top: 5px;
                                                 padding-left: 10px;
                                                 padding-top: 2px;
-                                                padding-bottom: 2px;"
-                                         v-on:click.stop.prevent="routeToRanking()"></span>
+                                                padding-bottom: 2px;
+                                                cursor: pointer;"
+                                         v-on:click.stop.prevent="goToRanking()"></span>
                         </li>
                     </ul>
                     <ul class="nav nav-pills pull-right">
@@ -35,7 +38,8 @@
                 <account-info></account-info>
             </div>
 
-            <div class="row matches">
+            <loader v-if="!isFetchingCompleted"></loader>
+            <div v-else class="row matches">
                 <match v-for="match in matches" v-bind:match="match" :key="match.num"></match>
             </div>
         </div>
@@ -45,21 +49,27 @@
 
 <script>
 import { mapState } from 'vuex' 
+import { mapMutations } from 'vuex'
 import { key_jwt, key_user_data } from '@/common'
 import Logout from '@/components/Logout'
 import AccountInfo from '@/components/AccountInfo'
 import Match from '@/components/Match'
+import Loader from '@/components/Loader'
+import MoveTop from '@/components/MoveTop'
+import { fetchMatchesWithPredictions } from '@/api'
 
 export default {
     name: 'Home',
     components: {
         Logout,
         AccountInfo,
-        Match
+        Match,
+        Loader,
+        MoveTop
     },
     data () {
         return {
-
+            isFetchingCompleted: false
         }
     },
     computed: mapState({
@@ -73,13 +83,48 @@ export default {
         }
     }),
     beforeMount() {
-        this.$store.dispatch('loadMatchesWithPredictions', { jwt: this.jwt })
+        fetchMatchesWithPredictions(this.jwt)
+            .then((response) => {
+                this.isFetchingCompleted = true
+                if (response.status === 200) {
+                    this.setMatches({ matches: response.data })
+                }
+            })
+            .catch(error => {
+                this.isFetchingCompleted = true
+                if (error.response.data['message']) {
+                    this.setNotificationContent({ header: 'Error',
+                                                  body: error.response.data['message'] })
+                    this.showNotification()
+                    // There is problem with authentication
+                    // Back to login
+                    if (error.response.status == 401) {
+                        this.setNotificationRedirectAfterClose({ redirect: true,
+                                                                 component_name: 'Login' })
+                        this.$store.dispatch('logout')
+                    }
+                } else if (error) {
+                    this.setNotificationContent({ header: 'Error',
+                                                  body: error })
+                    this.showNotification()
+                } else {
+                    this.setNotificationContent({ header: 'Error',
+                                                  body: 'Error' })
+                    this.showNotification()
+                }
+            })
     },
     methods: {
-        routeToUserCP: function() {
+        ...mapMutations([
+            'setMatches',
+            'setNotificationContent',
+            'showNotification',
+            'setNotificationRedirectAfterClose'
+        ]),
+        goToUserCP: function() {
             this.$router.push({ name: 'UserCP' })
         },
-        routeToRanking: function() {
+        goToRanking: function() {
             this.$router.push({ name: 'Ranking' })
         }
     }

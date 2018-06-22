@@ -1,12 +1,18 @@
 <template>
     <div id="app">
+        <notification></notification>
         <router-view/>
     </div>
 </template>
 
 <script>
+import Notification from './components/Notification'
+
 export default {
     name: 'App',
+    components: {
+        Notification
+    },
     data() {
         return {
 
@@ -28,4 +34,14 @@ export default {
 </script>
 
 <style>
+@font-face {
+    font-family: localCenturyGothic;
+    src: url('./assets/fonts/centurygothic-webfont.woff') format('woff');
+}
+
+@font-face {
+    font-family: localCenturyGothic;
+    src: url('./assets/fonts/centurygothicbold-webfont.woff') format('woff');
+    font-weight: bold;
+}
 </style>

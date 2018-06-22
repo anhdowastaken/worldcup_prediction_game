@@ -187,6 +187,7 @@ def login():
     if registered_user is None or bcrypt.check_password_hash(registered_user.password, password) == False:
         return jsonify(dict(message='Username or password is invalid', authenticated=False)), 401
 
+    last_login_at = registered_user.last_login_at
     registered_user.last_login_at = datetime.utcnow()
     try:
         db.session.add(registered_user)
@@ -207,7 +208,7 @@ def login():
                                            username=registered_user.username,
                                            role=registered_user.role,
                                            created_at=int(registered_user.created_at.replace(tzinfo=pytz.utc).timestamp()),
-                                           last_login_at=int(registered_user.last_login_at.replace(tzinfo=pytz.utc).timestamp())))), 200
+                                           last_login_at=int(last_login_at.replace(tzinfo=pytz.utc).timestamp())))), 200
     else:
         return jsonify(dict(message='Logged in failed', authenticated=False)), 500
 
@@ -250,10 +251,10 @@ def change_password(jwt_user):
 
     registered_user = User.query.filter_by(id=jwt_user.id).first()
     if registered_user is None or bcrypt.check_password_hash(registered_user.password, old_password) == False:
-        return jsonify(dict(message='Old password is incorrect', changed=False)), 200
+        return jsonify(dict(message='Old password is incorrect', changed=False)), 400
 
     if new_password == '':
-        return jsonify(dict(message='New password can\'t be empty', changed=False)), 200
+        return jsonify(dict(message='New password can\'t be empty', changed=False)), 400
 
     password_hash = bcrypt.generate_password_hash(new_password).decode('utf-8')
     registered_user.password = password_hash

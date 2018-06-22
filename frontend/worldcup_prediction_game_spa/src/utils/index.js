@@ -23,21 +23,23 @@ export function isEmpty(obj) {
     return JSON.stringify(obj) === JSON.stringify({});
 }
 
-export function msToTime(s) {
-    if (s < 0) {
+export function msToTime(ms, day=true, hour=true, min=true, sec=false) {
+    if (ms < 0) {
         return ''
     }
 
-    let ms = s % 1000;
-    s = (s - ms) / 1000;
-    let secs = s % 60;
-    s = (s - secs) / 60;
-    let mins = s % 60;
-    s = (s - mins) / 60
-    let hrs = s % 24;
-    let days = (s - hrs) / 24
+    let msecs = ms % 1000;
+    ms = (ms - msecs) / 1000;
+    let secs = ms % 60;
+    ms = (ms - secs) / 60;
+    let mins = ms % 60;
+    ms = (ms - mins) / 60
+    let hrs = ms % 24;
+    let days = (ms - hrs) / 24
     
-    // return hrs + ':' + mins + ':' + secs + '.' + ms;
-    return (days ? days + 'd:' : '') + (hrs ? hrs + 'h:' : '') + mins + 'm'
+    return (days && day ? days + 'd' : '')
+           + (hrs && hour ? hrs + 'h' : '')
+           + (mins && min ? mins + 'm' : '')
+           + (secs && sec ? secs + 's' : '')
 }
 
