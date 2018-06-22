@@ -13,6 +13,7 @@ export default {
     },
     methods: {
         moveTop: function() {
+            // FIXME: Should use pure JS instead of jQuery?
             // window.scrollTo(0, 0)
             this.$nextTick(() => {
                 $('html, body').animate({ scrollTop: 0 }, 1000)

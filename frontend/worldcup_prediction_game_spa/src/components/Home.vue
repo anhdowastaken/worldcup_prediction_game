@@ -87,7 +87,27 @@ export default {
             .then((response) => {
                 this.isFetchingCompleted = true
                 if (response.status === 200) {
-                    this.setMatches({ matches: response.data })
+                    let matches = response.data
+                    // Find most recent match
+                    let found_most_recent = false
+                    for (let i = 0; i < matches.length; i++) {
+                        let match = matches[i]
+                        let match_time = match.date.replace(/-/g, "/") + ' ' + match.time + ' ' + (match.timezone ? match.timezone : '')
+                        let d = new Date(match_time)
+                        let diff = d.getTime() - Date.now()
+                        if (diff > 0) {
+                            found_most_recent = true
+                            match['most_recent'] = true
+                            break
+                        }
+                    }
+                    this.setMatches({ matches: matches })
+                    if (found_most_recent) {
+                        this.$nextTick(() => {
+                            // FIXME: Should use pure JS instead of jQuery?
+                            $('html, body').animate({ scrollTop: $('.match.most-recent').offset().top }, 2000)
+                        })
+                    }
                 }
             })
             .catch(error => {
