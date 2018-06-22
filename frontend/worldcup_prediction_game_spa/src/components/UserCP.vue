@@ -12,8 +12,9 @@
                                   style="font-size:24px;
                                          color:white;
                                          padding-top:2px;
-                                         margin-top:2px;"
-                                  v-on:click.stop.prevent="back"></span></li>
+                                         margin-top:2px;
+                                         cursor: pointer;"
+                                  v-on:click.stop.prevent="goBack"></span></li>
                     </ul>
  
                     <ul class="nav nav-pills pull-right">
@@ -31,7 +32,8 @@
                 <input type="password" id="inputNewPassword" class="form-control" placeholder="new password" required v-model="new_password">
                 <button class="btn btn-lg btn-primary btn-block"
                         v-on:submit.stop.prevent="doNothing()"
-                        v-on:click.stop.prevent="changePassword()">Change</button>
+                        v-on:click.stop.prevent="changePassword()"
+                        v-bind:disabled="!isHttpRequestCompleted">Change</button>
             </form>
         </div>
     </div>
@@ -39,7 +41,9 @@
 
 <script>
 import { mapState } from 'vuex' 
+import { mapMutations } from 'vuex'
 import { isEmpty } from '@/utils'
+import { submitChangePassword } from '@/api'
 import { key_jwt, key_user_data } from '@/common'
 import AccountInfo from '@/components/AccountInfo'
 import Logout from '@/components/Logout'
@@ -53,7 +57,8 @@ export default {
     data() {
         return {
             old_password: "",
-            new_password: ""
+            new_password: "",
+            isHttpRequestCompleted: true
         }
     },
     computed: mapState({
@@ -61,29 +66,70 @@ export default {
             if (!isEmpty(state.userData)) {
                 return state.userData
             } else {
-                return JSON.parse(sessionStorage.getItem(key_user_data))
+                return JSON.parse(localStorage.getItem(key_user_data))
             }
         },
         jwt: function(state) {
             if (state.jwt) {
                 return state.jwt 
             } else {
-                return sessionStorage.getItem(key_jwt)
+                return localStorage.getItem(key_jwt)
             }
         }
     }),
     methods: {
+        ...mapMutations([
+            'setNotificationContent',
+            'showNotification',
+            'setNotificationRedirectAfterClose'
+        ]),
         changePassword: function() {
-            this.$store.dispatch('changePassword', { jwt: this.jwt,
-                                                     old_password: this.old_password,
-                                                     new_password: this.new_password })
-            this.old_password = ""
-            this.new_password = ""
+            if (this.old_password == '' || this.new_password == '') {
+                this.setNotificationContent({ header: 'Error',
+                                              body: 'Password can\'t be empty' })
+                this.showNotification()
+            } else {
+                this.isHttpRequestCompleted = false
+                submitChangePassword(this.jwt, this.old_password, this.new_password )
+                    .then(response => {
+                        this.isHttpRequestCompleted = true
+                        if (response.status === 201) {
+                            this.setNotificationContent({ header: 'Notification',
+                                                          body: response.data['message'] })
+                            this.showNotification()
+                            this.old_password = ""
+                            this.new_password = ""
+                        }
+                    })
+                    .catch(error => {
+                        this.isHttpRequestCompleted = true
+                        if (error.response.data['message']) {
+                            this.setNotificationContent({ header: 'Error',
+                                                          body: error.response.data['message'] })
+                            this.showNotification()
+                            // There is problem with authentication
+                            // Back to login
+                            if (error.response.status == 401) {
+                                this.setNotificationRedirectAfterClose({ redirect: true,
+                                                                         component_name: 'Login' })
+                                this.$store.dispatch('logout')
+                            }
+                        } else if (error) {
+                            context.commit('setNotificationContent', { header: 'Error',
+                                                                       body: error })
+                            context.commit('showNotification')
+                        } else {
+                            context.commit('setNotificationContent', { header: 'Error',
+                                                                       body: 'Error' })
+                            context.commit('showNotification')
+                        }
+                    })
+            }
         },
         doNothing: function() {
 
         },
-        back: function() {
+        goBack: function() {
             if (window.history.length > 1) {
                 this.$router.go(-1)
             } else {
@@ -170,7 +216,7 @@ export default {
     max-width: 330px;
     padding: 15px;
     margin: 0 auto;
-    font-family: "Century Gothic", CenturyGothic, AppleGothic, sans-serif;
+    font-family: localCenturyGothic, "Century Gothic", CenturyGothic, "Apple Gothic", AppleGothic, "URW Gothic L", "Avant Garde", Futura, sans-serif;
 }
 .form-change-password .form-change-password-heading {
     margin-bottom: 10px;

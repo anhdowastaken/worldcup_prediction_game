@@ -6,12 +6,7 @@ import router from '@/router'
 import { key_jwt, key_user_data } from '@/common'
 
 // imports of AJAX functions go here
-import { fetchMatchesWithPredictions } from '@/api'
-import { submitLogin } from '@/api'
 import { submitLogout } from '@/api'
-import { submitRegister } from '@/api'
-import { submitResetPassword } from '@/api'
-import { submitChangePassword } from '@/api'
 import { isValidJwt } from '@/utils'
 
 Vue.use(Vuex)
@@ -23,59 +18,20 @@ const state = {
     // changes by any components interested in them such as the Home component.
     matches: [],
     userData: {},
-    jwt: ''
+    jwt: '',
+    // States of notification modal
+    notificationHeader: '',
+    notificationBody: '',
+    notificationDisplay: false,
+    notificationDisplayStyle: 'none',
+    notificationRedirectAfterClose: false,
+    notificationRedirectComponentName: ''
 }
 
 const actions = {
     // The actions object is where I will define what are known as action methods.
     // Action methods are referred to as being "dispatched" and they're used to
     // handle asynchronous operations such as AJAX calls to an external service or API.
-    loadMatchesWithPredictions(context, { jwt }) {
-        return fetchMatchesWithPredictions(jwt)
-            .then((response) => {
-                if (response.status === 200) {
-                    context.commit('setMatches', { matches: response.data })
-                }
-            })
-            .catch(error => {
-                if (error.response.data['message']) {
-                    // TODO: Use HTML dialog
-                    alert(error.response.data['message'])
-                    // There is problem with authentication
-                    // Back to login
-                    if (error.response.status == 401) {
-                        console.log('debug')
-                        context.dispatch('logout').then(() => {
-                            router.push({ name: "Login" })
-                        })
-                    }
-                } else if (error) {
-                    alert(error)
-                } else {
-                    alert('Error')
-                }
-            })
-    },
-    login(context, { username, password }) {
-        return submitLogin(username, password)
-            .then(response => {
-                if (response.status === 200) {
-                    context.commit('setJwtToken', { jwt: response.data['token'] })
-                    context.commit('setUserData', { userData: response.data['user_data'] })
-                    router.push({ name: "Home" })
-                }
-            })
-            .catch(error => {
-                if (error.response.data['message']) {
-                    // TODO: Use HTML dialog
-                    alert(error.response.data['message'])
-                } else if (error) {
-                    alert('Error Authenticating: ', error)
-                } else {
-                    alert('Error')
-                }
-            })
-    },
     logout(context) {
         return submitLogout()
             .then(() => {
@@ -84,88 +40,14 @@ const actions = {
                 context.commit('removeUserData')
             })
             .catch(error => {
-                alert(error)
-            })
-    },
-    register(context, { jwt, username }) {
-        return submitRegister(jwt, username)
-            .then(response => {
-                if (response.status === 201) {
-                    // TODO: Use HTML dialog
-                    alert(response.data['message'])
-                    alert(response.data['user_data']['password'])
-                }
-            })
-            .catch(error => {
-                if (error.response.data['message']) {
-                    // TODO: Use HTML dialog
-                    alert(error.response.data['message'])
-                    // There is problem with authentication
-                    // Back to login
-                    if (error.response.status == 401) {
-                        context.dispatch('logout').then(() => {
-                            router.push({ name: "Login" })
-                        })
-                    }
-                } else if (error) {
-                    alert(error)
+                if (error) {
+                    context.commit('setNotificationContent', { header: 'Error',
+                                                               body: error })
+                    context.commit('showNotification')
                 } else {
-                    alert('Error')
-                }
-            })
-    },
-    resetPassword(context, { jwt, username }) {
-        return submitResetPassword(jwt, username)
-            .then(response => {
-                if (response.status === 201) {
-                    // TODO: Use HTML dialog
-                    alert(response.data['message'])
-                    alert(response.data['user_data']['password'])
-                }
-            })
-            .catch(error => {
-                if (error.response.data['message']) {
-                    // TODO: Use HTML dialog
-                    alert(error.response.data['message'])
-                    // There is problem with authentication
-                    // Back to login
-                    if (error.response.status == 401) {
-                        context.dispatch('logout').then(() => {
-                            router.push({ name: "Login" })
-                        })
-                    }
-                } else if (error) {
-                    alert(error)
-                } else {
-                    alert('Error')
-                }
-            })
-    },
-    changePassword(context, { jwt, old_password, new_password }) {
-        return submitChangePassword(jwt, old_password, new_password )
-            .then(response => {
-                if (response.status === 201) {
-                    // TODO: Use HTML dialog
-                    alert(response.data['message'])
-                } else {
-                    alert(response.data['message'])
-                }
-            })
-            .catch(error => {
-                if (error.response.data['message']) {
-                    // TODO: Use HTML dialog
-                    alert(error.response.data['message'])
-                    // There is problem with authentication
-                    // Back to login
-                    if (error.response.status == 401) {
-                        context.dispatch('logout').then(() => {
-                            router.push({ name: "Login" })
-                        })
-                    }
-                } else if (error) {
-                    alert(error)
-                } else {
-                    alert('Error')
+                    context.commit('setNotificationContent', { header: 'Error',
+                                                               body: 'Error' })
+                    context.commit('showNotification')
                 }
             })
     }
@@ -195,25 +77,48 @@ const mutations = {
         if (payload.userData['last_login_at']) {
             // Backend returns timestamp in second (UTC)
             let d = new Date()
-            // FIXME: Should force backend return timestamp of UTC+0?
-            d = new Date(payload.userData['last_login_at'] * 1000 - d.getTimezoneOffset() * 60 * 1000)
+            d = new Date(payload.userData['last_login_at'] * 1000)
             payload.userData['last_login_at'] = d.toLocaleString()
         }
-        sessionStorage.setItem(key_user_data, JSON.stringify(payload.userData))
+        localStorage.setItem(key_user_data, JSON.stringify(payload.userData))
         state.userData = payload.userData
     },
     setJwtToken(state, payload) {
         console.log('setJwtToken payload = ', payload)
-        sessionStorage.setItem(key_jwt, payload.jwt)
+        localStorage.setItem(key_jwt, payload.jwt)
         state.jwt = payload.jwt
     },
     removeUserData(state) {
-        sessionStorage.removeItem(key_user_data)
+        localStorage.removeItem(key_user_data)
         state.userData = {}
     },
     removeJwtToken(state, payload) {
-        sessionStorage.removeItem(key_jwt)
+        localStorage.removeItem(key_jwt)
         state.jwt = ''
+    },
+    setNotificationContent(state, payload) {
+        state.notificationHeader = payload['header']
+        state.notificationBody = payload['body']
+    },
+    setNotificationRedirectAfterClose(state, payload) {
+        state.notificationRedirectAfterClose = payload['redirect']
+        state.notificationRedirectComponentName = payload['component_name']
+    },
+    showNotification(state) {
+        state.notificationDisplayStyle = 'block'
+        state.notificationDisplay = true
+    },
+    hideNotification(state) {
+        state.notificationDisplayStyle = 'none'
+        state.notificationDisplay = false
+        state.notificationHeader = ''
+        state.notificationBody = ''
+        if (state.notificationRedirectAfterClose == true) {
+            state.notificationRedirectAfterClose = false
+            let componentName = state.notificationRedirectComponentName
+            state.notificationRedirectComponentName = ''
+            router.push({ name: componentName })
+        }
     }
 }
 
@@ -225,7 +130,7 @@ const getters = {
         if (state.jwt) {
             return isValidJwt(state.jwt)
         } else {
-            return isValidJwt(sessionStorage.getItem(key_jwt))
+            return isValidJwt(localStorage.getItem(key_jwt))
         }
     }
 }

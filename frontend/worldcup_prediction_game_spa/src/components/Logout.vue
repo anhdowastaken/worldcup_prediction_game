@@ -5,8 +5,6 @@
 </template>
 
 <script>
-import { mapState } from 'vuex' 
-
 export default {
     name: 'Logout',
     data() {
@@ -17,7 +15,9 @@ export default {
     methods: {
         logout: function() {
             this.$store.dispatch('logout')
-                .then(() => this.$router.replace({ name: "Login" }))
+                .then(() => {
+                    this.$router.push({ name: 'Login' })
+                })
         }
     }
 }
@@ -32,7 +32,8 @@ export default {
     padding-left: 13px;
     padding-right: 13px;
     color: white;
-    font-family: "Century Gothic", CenturyGothic, AppleGothic, sans-serif;
+    font-family: localCenturyGothic, "Century Gothic", CenturyGothic, "Apple Gothic", AppleGothic, "URW Gothic L", "Avant Garde", Futura, sans-serif;
     font-weight: bold;
+    cursor: pointer;
 }
 </style>

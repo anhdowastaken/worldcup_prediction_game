@@ -231,10 +231,25 @@ export function submitResetPassword(jwt, username) {
                     )
 }
 
-export function submitChangePassword(jwt, old_password, new_password ) {
+export function submitChangePassword(jwt, old_password, new_password) {
     return axios.create({withCredentials: true})
                 .post(`${API_URL}/change_password`,
                       { old_password: old_password, new_password: new_password },
+                      { headers: { Authorization: `Bearer: ${jwt}` } }
+                    )
+}
+
+export function getRanking(jwt) {
+    return axios.create({withCredentials: true})
+                .get(`${API_URL}/get_ranking`,
+                      { headers: { Authorization: `Bearer: ${jwt}` } }
+                    )
+}
+
+export function submitDeleteUser(jwt, username) {
+    return axios.create({withCredentials: true})
+                .post(`${API_URL}/delete_user`,
+                      { username: username },
                       { headers: { Authorization: `Bearer: ${jwt}` } }
                     )
 }

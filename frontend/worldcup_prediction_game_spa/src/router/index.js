@@ -4,6 +4,7 @@ import Login from '@/components/Login'
 import Home from '@/components/Home'
 import Admin from '@/components/Admin'
 import UserCP from '@/components/UserCP'
+import Ranking from '@/components/Ranking'
 import { key_jwt, key_user_data } from '@/common'
 
 Vue.use(Router)
@@ -17,13 +18,14 @@ const router = new Router({
             beforeEnter(to, from, next) {
                 // FIXME: Why does line below not work (always return True after reload)?
                 // if (!store.getters.isAuthenticated) {
-                if (sessionStorage.getItem(key_jwt) == null ||
-                    sessionStorage.getItem(key_jwt) == undefined ||
-                    sessionStorage.getItem(key_jwt) == '') {
+                console.log(localStorage.getItem(key_jwt))
+                if (localStorage.getItem(key_jwt) == null ||
+                    localStorage.getItem(key_jwt) == undefined ||
+                    localStorage.getItem(key_jwt) == '') {
                     next()
-                } else if (sessionStorage.getItem(key_user_data) &&
-                           JSON.parse(sessionStorage.getItem(key_user_data))['role'] &&
-                           JSON.parse(sessionStorage.getItem(key_user_data))['role'] == 'admin') {
+                } else if (localStorage.getItem(key_user_data) &&
+                           JSON.parse(localStorage.getItem(key_user_data))['role'] &&
+                           JSON.parse(localStorage.getItem(key_user_data))['role'] == 'admin') {
                     next('/admin')
                 } else {
                     next('/home')
@@ -35,13 +37,13 @@ const router = new Router({
             name: 'Home',
             component: Home,
             beforeEnter(to, from, next) {
-                if (sessionStorage.getItem(key_jwt) == null ||
-                    sessionStorage.getItem(key_jwt) == undefined ||
-                    sessionStorage.getItem(key_jwt) == '') {
+                if (localStorage.getItem(key_jwt) == null ||
+                    localStorage.getItem(key_jwt) == undefined ||
+                    localStorage.getItem(key_jwt) == '') {
                     next('/')
-                } else if (sessionStorage.getItem(key_user_data) &&
-                           JSON.parse(sessionStorage.getItem(key_user_data))['role'] &&
-                           JSON.parse(sessionStorage.getItem(key_user_data))['role'] == 'admin') {
+                } else if (localStorage.getItem(key_user_data) &&
+                           JSON.parse(localStorage.getItem(key_user_data))['role'] &&
+                           JSON.parse(localStorage.getItem(key_user_data))['role'] == 'admin') {
                     next('/admin')
                 } else {
                     next()
@@ -53,13 +55,13 @@ const router = new Router({
             name: 'Admin',
             component: Admin,
             beforeEnter(to, from, next) {
-                if (sessionStorage.getItem(key_jwt) == null ||
-                    sessionStorage.getItem(key_jwt) == undefined ||
-                    sessionStorage.getItem(key_jwt) == '') {
+                if (localStorage.getItem(key_jwt) == null ||
+                    localStorage.getItem(key_jwt) == undefined ||
+                    localStorage.getItem(key_jwt) == '') {
                     next('/')
-                } else if (sessionStorage.getItem(key_user_data) &&
-                           JSON.parse(sessionStorage.getItem(key_user_data))['role'] &&
-                           JSON.parse(sessionStorage.getItem(key_user_data))['role'] == 'admin') {
+                } else if (localStorage.getItem(key_user_data) &&
+                           JSON.parse(localStorage.getItem(key_user_data))['role'] &&
+                           JSON.parse(localStorage.getItem(key_user_data))['role'] == 'admin') {
                     next()
                 } else {
                     next('/home')
@@ -71,11 +73,27 @@ const router = new Router({
             name: 'UserCP',
             component: UserCP,
             beforeEnter(to, from, next) {
-                if (sessionStorage.getItem(key_jwt) == null ||
-                    sessionStorage.getItem(key_jwt) == undefined ||
-                    sessionStorage.getItem(key_jwt) == '') {
+                if (localStorage.getItem(key_jwt) == null ||
+                    localStorage.getItem(key_jwt) == undefined ||
+                    localStorage.getItem(key_jwt) == '') {
                     next('/')
-                } else if (sessionStorage.getItem(key_user_data)) {
+                } else if (localStorage.getItem(key_user_data)) {
+                    next()
+                } else {
+                    next('/home')
+                }
+            }
+        },
+        {
+            path: '/ranking',
+            name: 'Ranking',
+            component: Ranking,
+            beforeEnter(to, from, next) {
+                if (localStorage.getItem(key_jwt) == null ||
+                    localStorage.getItem(key_jwt) == undefined ||
+                    localStorage.getItem(key_jwt) == '') {
+                    next('/')
+                } else if (localStorage.getItem(key_user_data)) {
                     next()
                 } else {
                     next('/home')
