@@ -207,7 +207,8 @@ def login():
                             user_data=dict(user_id=registered_user.id,
                                            username=registered_user.username,
                                            role=registered_user.role,
-                                           last_login_at=int(last_login_at.timestamp())))), 200
+                                           created_at=int(registered_user.created_at.replace(tzinfo=pytz.utc).timestamp()),
+                                           last_login_at=int(last_login_at.replace(tzinfo=pytz.utc).timestamp())))), 200
     else:
         return jsonify(dict(message='Logged in failed', authenticated=False)), 500
 
@@ -423,6 +424,15 @@ def get_ranking(jwt_user):
             # Calculate point
             point = 0
             for m in matches_copy:
+                # If this account is created after match started, don't count this match
+                user_created_at = int(u.created_at.replace(tzinfo=pytz.utc).timestamp())
+                match_time_str = m['date'] + ' ' + m['time'] + ' ' + (m['timezone'] if m['timezone'] else '')
+                match_time = parser.parse(match_time_str)
+                match_time = match_time.replace(tzinfo=pytz.utc) + match_time.utcoffset()
+                match_time = int(match_time.timestamp())
+                if user_created_at > match_time:
+                    continue
+
                 if 'prediction' not in m:
                     prediction = None
                 else:

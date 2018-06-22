@@ -77,7 +77,7 @@ const mutations = {
         if (payload.userData['last_login_at']) {
             // Backend returns timestamp in second (UTC)
             let d = new Date()
-            d = new Date(payload.userData['last_login_at'] * 1000 - d.getTimezoneOffset() * 60 * 1000)
+            d = new Date(payload.userData['last_login_at'] * 1000)
             payload.userData['last_login_at'] = d.toLocaleString()
         }
         sessionStorage.setItem(key_user_data, JSON.stringify(payload.userData))
