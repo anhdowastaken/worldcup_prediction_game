@@ -80,20 +80,20 @@ const mutations = {
             d = new Date(payload.userData['last_login_at'] * 1000)
             payload.userData['last_login_at'] = d.toLocaleString()
         }
-        sessionStorage.setItem(key_user_data, JSON.stringify(payload.userData))
+        localStorage.setItem(key_user_data, JSON.stringify(payload.userData))
         state.userData = payload.userData
     },
     setJwtToken(state, payload) {
         console.log('setJwtToken payload = ', payload)
-        sessionStorage.setItem(key_jwt, payload.jwt)
+        localStorage.setItem(key_jwt, payload.jwt)
         state.jwt = payload.jwt
     },
     removeUserData(state) {
-        sessionStorage.removeItem(key_user_data)
+        localStorage.removeItem(key_user_data)
         state.userData = {}
     },
     removeJwtToken(state, payload) {
-        sessionStorage.removeItem(key_jwt)
+        localStorage.removeItem(key_jwt)
         state.jwt = ''
     },
     setNotificationContent(state, payload) {
@@ -130,7 +130,7 @@ const getters = {
         if (state.jwt) {
             return isValidJwt(state.jwt)
         } else {
-            return isValidJwt(sessionStorage.getItem(key_jwt))
+            return isValidJwt(localStorage.getItem(key_jwt))
         }
     }
 }

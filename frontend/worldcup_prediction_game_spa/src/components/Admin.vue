@@ -89,14 +89,14 @@ export default {
             if (!isEmpty(state.userData)) {
                 return state.userData
             } else {
-                return JSON.parse(sessionStorage.getItem(key_user_data))
+                return JSON.parse(localStorage.getItem(key_user_data))
             }
         },
         jwt: function(state) {
             if (state.jwt) {
                 return state.jwt 
             } else {
-                return sessionStorage.getItem(key_jwt)
+                return localStorage.getItem(key_jwt)
             }
         }
     }),
