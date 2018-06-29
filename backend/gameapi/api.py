@@ -292,7 +292,9 @@ def get_matches_with_predictions(jwt_user):
             match_time = parser.parse(match_time_str)
             match_time = match_time.replace(tzinfo=pytz.utc) + match_time.utcoffset()
             m['match_time_utc_seconds'] = int(match_time.timestamp())
-            
+
+            if 'knockout' in m and m['knockout']:
+                m['group'] = 'knockout'
 
         # Sort matches by match time
         matches = sorted(matches,
@@ -336,6 +338,9 @@ def submit_prediction(jwt_user):
     match_id = data['match_id']
     prediction = data['prediction']
 
+    if prediction not in [0, 1, 2]:
+        return jsonify(dict(message='Invalid prediction')), 400
+
     # Do not allow update prediction if the match started
     current_time = int(time.time())
 
@@ -351,6 +356,10 @@ def submit_prediction(jwt_user):
         if m['num'] == match_id:
             match = m
     if match:
+        # Do not allow predict draw in knockout round
+        if 'knockout' in match and match['knockout'] and prediction == 0:
+            return jsonify(dict(message='Can\'t predict draw in knockout round')), 400
+
         match_time_str = match['date'] + ' ' + match['time'] + ' ' + (match['timezone'] if match['timezone'] else '')
         match_time = parser.parse(match_time_str)
         match_time = match_time.replace(tzinfo=pytz.utc) + match_time.utcoffset()
