@@ -61,9 +61,6 @@ const mutations = {
     setMatches(state, payload) {
         for (let i = 0; i < payload.matches.length; i++) {
             let match = payload.matches[i]
-            if (match['knockout']) {
-                match['group'] = 'Knockout'
-            }
 
             // Replace "-" by "/" to avoid issue on Safari
             let match_time = match.date.replace(/-/g, "/") + ' ' + match.time + ' ' + (match.timezone ? match.timezone : '')

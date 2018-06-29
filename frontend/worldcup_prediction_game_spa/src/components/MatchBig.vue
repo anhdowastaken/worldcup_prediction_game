@@ -50,6 +50,7 @@
                         v-on:click.stop.prevent="submit(1)">{{ this.match.team1.code }}</button>
                 <button type="button"
                         class="btn btn-default"
+                        v-show="!isKnockoutRound"
                         v-bind:class="{ 'btn-success': isDrawChosen, 'disabled': !enoughTimeToPredict }"
                         v-bind:disabled="!enoughTimeToPredict || !isHttpRequestCompleted"
                         v-on:click.stop.prevent="submit(0)">DRAW</button>
@@ -143,6 +144,9 @@ export default {
             } else {
                 return true
             }
+        },
+        isKnockoutRound: function() {
+            return this.match.knockout
         }
     }),
     mounted: function() {
